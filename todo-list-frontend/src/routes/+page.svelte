@@ -7,6 +7,9 @@ Things to add:
 4) Save tasks to JSON file
 5) Upload tasks to JSON file
 6) ID feature to remember user 
+
+Things to work on
+1) Search task array to delete stuff
 -->
 
 <script lang="ts">
@@ -36,6 +39,7 @@ Things to add:
         else{
             taskName = tempName;
             taskArray.push(taskName)
+            taskArray = taskArray;
         }
     }
     
@@ -66,6 +70,9 @@ Things to add:
     <p>The ping response count was: {pingResponseCount}</p>
 {/if}
 
+<p>The task you added was: {taskName}</p>
+<p>Current Tasks: {taskArray.join(', ')}</p>
+
 <input bind:value={tempName} placeholder="Enter Task" />
 
 <div>
@@ -73,14 +80,6 @@ Things to add:
         Add Task
     </button>
 </div>
-
-{#if taskName != undefined}
-    <p>The task you added was: {taskName}</p>
-{/if}
-
-{#if taskArray != undefined}
-    <p>Current Tasks: {taskArray.join(', ')}</p>
-{/if}
 
 <div>
     <button on:click={deleteTask}>
