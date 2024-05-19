@@ -1,33 +1,50 @@
-import express, { Request, Response } from 'express';
+import express, { type Request, type Response } from "express";
+import type { TodoItem, CreateTodoItemRequest } from "./types";
+// import cors from "cors";
+import cors from "cors";
 
 const app = express();
 const port = 3000;
+app.use(express.json());
+app.use(cors());
 
 // State (count the number of requests)
-let count = 0;
+let idCounter = 0;
 
-// When someone makes a request to http://localhost:3000/, run this code, and give this reply
-app.get('/', (req: Request, res: Response) => {
-    res
-    .setHeader('Access-Control-Allow-Origin', '*')
-    .status(200)
-    .send('Hello, TypeScript Express!');
+const todos: TodoItem[] = [];
+
+// Add a todo item
+app.post("/todo-item", (req: Request, res: Response) => {
+	const todoRequest: CreateTodoItemRequest = req.body;
+
+	const newTodoItem: TodoItem = {
+		id: idCounter,
+		description: todoRequest.description,
+		isDone: false,
+	};
+
+	idCounter++;
+
+	todos.push(newTodoItem);
+
+	res
+		.setHeader("Access-Control-Allow-Origin", "*")
+		.status(200)
+		.send(newTodoItem); // In REST APIs, it is customary for create-type requests (POST) to return the entire created item
 });
 
-app.get("/ping",  (req: Request, res: Response) => {
-    count++;
-    
-    let responseContent = {
-        message: "pong",
-        count: count,
-    };
-    
-    res
-    .setHeader('Access-Control-Allow-Origin', '*')
-    .status(200)
-    .json(responseContent);
+// Get all the todos
+app.get("/todo-item", (req: Request, res: Response) => {
+	res.setHeader("Access-Control-Allow-Origin", "*").status(200).json(todos);
+});
+
+app.get("/", (req: Request, res: Response) => {
+	res
+		.setHeader("Access-Control-Allow-Origin", "*")
+		.status(200)
+		.send("This is the to-do list backend!");
 });
 
 app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
+	console.log(`Server running at http://localhost:${port}`);
 });
