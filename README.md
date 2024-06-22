@@ -33,7 +33,7 @@ npm run dev
 It's the same as the frontend, but the launch command is different.
 
 ```sh
-cd todo-list-frontend
+cd todo-list-backend
 npm install
 npm run start
 ```
