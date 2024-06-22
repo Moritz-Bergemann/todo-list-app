@@ -1,6 +1,6 @@
-For this tutorial, I am assuming you are running Linux! Mac should work fine too, though you might have to go looking for the MacOS version of some tools. If you're on Windows, either (1) [install WSL](https://learn.microsoft.com/en-us/windows/wsl/install) or (2) be prepared to find your own alternatves.
 
-## Setup
+## Environment Setup
+For this tutorial, I am assuming you are running Linux! Mac should work fine too, though you might have to go looking for the MacOS version of some tools. If you're on Windows, either (1) [install WSL](https://learn.microsoft.com/en-us/windows/wsl/install) or (2) be prepared to find your own alternatves.
 
 First, we'll install Node.JS and the Node package manager. NodeJS is a way for you to run Javascript for backend applications, rather than just inside the browser. **NPM** (Node Package Manager) comes with Node and is what we use to install packages (extral tools and libraries) for our node application.
 ```sh
@@ -15,7 +15,32 @@ nvm install --lts
 nvm use --lts
 ```
 
+## Quickstart
+*These are the steps for just getting the repository running.*
+
+### Frontend
+
+Enter the frontend folder, install the NPM dependencies, and you're ready to launch!
+
+```sh
+cd todo-list-frontend
+npm install
+npm run dev
+```
+
+### Backend
+
+It's the same as the frontend, but the launch command is different.
+
+```sh
+cd todo-list-frontend
+npm install
+npm run start
+```
+
 ### Backend - Express.js
+*These are the steps for creating this repository from scratch!*
+
   First, create a new directory, then enter it:
 ```sh
 mkdir todo-list-backend
