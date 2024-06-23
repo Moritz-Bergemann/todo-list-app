@@ -12,12 +12,16 @@ Things to work on
 1) Search task array to delete stuff
 -->
 
+
 <script lang="ts">
+    import type { TodoItem } from "./types";
+
     let pingResponseMessage: string;
     let pingResponseCount: number;
     let tempName = '';
     let taskName: string;
     let taskArray: string[] = [];
+    let taskJSON: TodoItem[] = [];
  
     async function ping() {
         // Make a GET request to the ping-pong backend API 
@@ -46,6 +50,9 @@ Things to work on
         
         // Get the JSON body from the request
         let responseJson = await response.json();
+
+        // Set our pingResponse variable to change the UI
+        taskJSON = responseJson;
     }
     
     async function displayTasks(){
@@ -81,6 +88,7 @@ Things to work on
 
 <p>The task you added was: {taskName}</p>
 <p>Current Tasks: {taskArray.join(', ')}</p>
+<p>taskJSON = {taskJSON}</p>
 
 <input bind:value={tempName} placeholder="Enter Task" />
 
