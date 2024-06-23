@@ -1,5 +1,4 @@
-<!-- 
-Things to add:
+<!-- Things to add:
 
 1) Add feature
 2) Remove feature
@@ -9,15 +8,14 @@ Things to add:
 6) ID feature to remember user 
 
 Things to work on
-1) Search task array to delete stuff
--->
+1) Search task array to delete stuff -->
 
 <script lang="ts">
     let pingResponseMessage: string;
     let pingResponseCount: number;
     let tempName = '';
     let taskName: string;
-    let taskArray: string[] = [];
+    let taskArray: [] = [];
  
     async function ping() {
         // Make a GET request to the ping-pong backend API 
@@ -33,25 +31,9 @@ Things to work on
 
     async function addTask() {
         // Add tasks to the Backend
-        // if (tempName == '') {
-        //     taskName = undefined;
-        // }
-        // else{
-        //     taskName = tempName;
-        //     taskArray.push(taskName)
-        //     taskArray = taskArray;
-        // }
-
-        let response = await fetch("http://localhost:3000/ping");
         
-        // Get the JSON body from the request
-        let responseJson = await response.json();
     }
     
-    async function displayTasks(){
-
-    }
-
     async function deleteTask() {
         // Delete tasks to the Backend
     }
@@ -80,7 +62,7 @@ Things to work on
 {/if}
 
 <p>The task you added was: {taskName}</p>
-<p>Current Tasks: {taskArray.join(', ')}</p>
+<!-- <p>Current Tasks: {taskArray.join(', ')}</p> -->
 
 <input bind:value={tempName} placeholder="Enter Task" />
 
@@ -107,3 +89,4 @@ Things to work on
         Save Task
     </button>
 </div>
+

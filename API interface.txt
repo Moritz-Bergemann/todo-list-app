@@ -2,6 +2,10 @@ ping:
     get request to "/" (origin)
     will send back response containing "ping recieved"
 
+ping:
+    get request to "/ping"
+    will send back response containing pong and counter
+
 add task:
     post request to "/add-todo"
     request body must contain a string called name, containing the name of the task
