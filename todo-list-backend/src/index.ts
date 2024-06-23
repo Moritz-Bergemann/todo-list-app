@@ -6,11 +6,26 @@ const app = express();
 const port = 3000;
 
 let counter = 0;
+let count = 0;
 const todoItems: TodoItem[] = [];
+
+app.get("/ping", (req: Request, res: Response) => {
+    count++;
+
+    let responseContent = {
+        message: "pong",
+        count: count,
+    };
+
+    res
+        .setHeader('Access-Control-Allow-Origin', '*')
+        .status(200)
+        .json(responseContent);
+});
 
 app.get("/", (req: Request, res: Response) => {
     res
-        .setHeader("Access-Control-Allow-Origin","*")
+        .setHeader("Access-Control-Allow-Origin", "*")
         .status(200)
         .send("ping recieved");
 });
