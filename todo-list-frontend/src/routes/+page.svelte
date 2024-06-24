@@ -14,6 +14,7 @@ Things to work on
 
 
 <script lang="ts">
+	import type { stringify } from "querystring";
     import type { TodoItem } from "./types";
 
     let pingResponseMessage: string;
@@ -46,17 +47,30 @@ Things to work on
         //     taskArray = taskArray;
         // }
 
-        let response = await fetch("http://localhost:3000/ping");
-        
-        // Get the JSON body from the request
-        let responseJson = await response.json();
+        if(tempName != '') {
+            taskName = tempName;
+            await fetch("http://localhost:3000/add-todo", {
+                method: 'POST',
+                body: {"name": taskName}
+            });
+            
+            // let response = await fetch("http://localhost:3000/add-todo", {taskName});
+            let response = await fetch("http://localhost:3000/get-todos");
 
-        // Set our pingResponse variable to change the UI
-        taskJSON = responseJson;
+            // Get the JSON body from the request
+            let responseJson = await response.json();
+
+            // Set our pingResponse variable to change the UI
+            taskJSON = responseJson.name;
+        }
+
+        else{
+            taskName = undefined;
+        }
     }
     
     async function displayTasks(){
-
+        let response = await fetch("http://localhost:3000/get-todos")
     }
 
     async function deleteTask() {
@@ -115,3 +129,7 @@ Things to work on
         Save Task
     </button>
 </div>
+
+{#each taskJSON as {is, name, isDone}, i}
+    {is, name, isDone}
+{/each}
