@@ -52,7 +52,7 @@ Things to work on
             taskName = tempName;
             await fetch("http://localhost:3000/add-todo", {
                 method: 'POST',
-                body: {"name": taskName}
+                body: {name: taskName}
             });
             
             // let response = await fetch("http://localhost:3000/add-todo", {taskName});
@@ -63,15 +63,14 @@ Things to work on
 
             // Set our pingResponse variable to change the UI
             taskJSON = responseJson;
+
+            // Pushes string to an array
+            taskArray.push(taskName)
         }
 
         else{
             taskName = undefined;
         }
-    }
-    
-    async function displayTasks(){
-        let response = await fetch("http://localhost:3000/get-todos")
     }
 
     async function deleteTask() {
@@ -98,17 +97,20 @@ Things to work on
         // Delete tasks to the Backend
     }
     
-    async function updateTask() {
+    async function displayTasks() {
         // Update tasks to the Backend
-    }
+        let response = await fetch("http://localhost:3000/get-todos");
 
-    async function saveTask() {
-        // Export tasks to the Backend
+        // Get the JSON body from the request
+        let responseJson = await response.json();
+
+        // Set our pingResponse variable to change the UI
+        taskJSON = responseJson;
     }
     
 </script>
  
-<h1>POGGERS Ping Pong</h1>
+<h1>POGGERS Todo List</h1>
 
 <div>
     <button on:click={ping}>
@@ -124,18 +126,19 @@ Things to work on
 <p>The task you added was: {taskName}</p>
 <p>taskJSON = {JSON.stringify(taskJSON)}</p>
 
-<p>Current Tasks: {taskJSON}</p>
+<p>Current Tasks:</p>
 <p>
     {#each taskJSON as task, i}
+        taskName: {taskArray[task.id]}
+        <br>
         taskID: {task.id}
         <br>
         taskBool: {task.isDone}
         <br>
-        <br>
     {/each} 
 </p>
 
-<input bind:value={tempName} placeholder="Enter Task" />
+<input bind:value={tempName} placeholder="Enter Task"/>
 
 <div>
     <button on:click={addTask}>
@@ -150,13 +153,7 @@ Things to work on
 </div>
 
 <div>
-    <button on:click={updateTask}>
-        Update Task
-    </button>
-</div>
-
-<div>
-    <button on:click={saveTask}>
-        Save Task
+    <button on:click={displayTasks}>
+        Display Task
     </button>
 </div>
