@@ -21,8 +21,9 @@ Things to work on
     let pingResponseCount: number;
     let tempName = '';
     let taskName: string;
-    let taskArray: string[] = [];
+    let taskArray: any[] = [];
     let taskJSON: TodoItem[] = [];
+    let numTasks = 0;
  
     async function ping() {
         // Make a GET request to the ping-pong backend API 
@@ -61,7 +62,7 @@ Things to work on
             let responseJson = await response.json();
 
             // Set our pingResponse variable to change the UI
-            taskJSON = responseJson.name;
+            taskJSON = responseJson;
         }
 
         else{
@@ -74,6 +75,26 @@ Things to work on
     }
 
     async function deleteTask() {
+        if(tempName != '') {
+            taskName = tempName;
+            fetch("http://localhost:3000/remove-todo", {
+                method: 'POST',
+                body: {id: 0}
+            });
+            
+            // let response = await fetch("http://localhost:3000/add-todo", {taskName});
+            let response = await fetch("http://localhost:3000/get-todos");
+
+            // Get the JSON body from the request
+            let responseJson = await response.json();
+
+            // Set our pingResponse variable to change the UI
+            taskJSON = responseJson.name;
+        }
+
+        else{
+            taskName = undefined;
+        }
         // Delete tasks to the Backend
     }
     
@@ -101,8 +122,18 @@ Things to work on
 {/if}
 
 <p>The task you added was: {taskName}</p>
-<p>Current Tasks: {taskArray.join(', ')}</p>
-<p>taskJSON = {taskJSON}</p>
+<p>taskJSON = {JSON.stringify(taskJSON)}</p>
+
+<p>Current Tasks: {taskJSON}</p>
+<p>
+    {#each taskJSON as task, i}
+        taskID: {task.id}
+        <br>
+        taskBool: {task.isDone}
+        <br>
+        <br>
+    {/each} 
+</p>
 
 <input bind:value={tempName} placeholder="Enter Task" />
 
@@ -129,7 +160,3 @@ Things to work on
         Save Task
     </button>
 </div>
-
-{#each taskJSON as {is, name, isDone}, i}
-    {is, name, isDone}
-{/each}
