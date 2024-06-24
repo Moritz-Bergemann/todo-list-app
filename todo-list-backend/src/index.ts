@@ -5,28 +5,52 @@ import cors from "cors";
 
 const app = express();
 const port = 3000;
+const mongoose = require('mongoose');
 app.use(express.json());
 app.use(cors());
 
+// This has my password hardcoded, teehee!
+mongoose.connect('mongodb+srv://joleenchong:R4KNFakc3Sfy840X@cluster0.jq5llig.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
+	.then(() => console.log('Connected to MongoDB'));
+	
 // State (count the number of requests)
 let idCounter = 0;
 
-const todos: TodoItem[] = [];
+// This is a schema that will map to a MongoDB collection and defines the shape of the documents within that collection.
+const todoSchema = new mongoose.Schema({
+	id: Number,
+	description: String,
+	isDone: Boolean
+});
+
+// This converts the schema into a Model.
+const Todo = mongoose.model('Todo', todoSchema);
+
+async function createTodo(description:String) {
+	// Creating an instance of the Todo model - a Document
+	const newTodoItem = new Todo({
+		id: idCounter,
+		description: description,
+		isDone: false
+	})
+
+	// This saves the new todo item into the database and stores the result in a constant.
+	return await newTodoItem.save();
+}
+
+// Returns all the todo items in the MongoDB database
+async function getTodos()
+{
+	return await Todo.find({});
+}
 
 // Add a todo item
 app.post("/todo-item", (req: Request, res: Response) => {
 	const todoRequest: CreateTodoItemRequest = req.body;
 
-	const newTodoItem: TodoItem = {
-		id: idCounter,
-		description: todoRequest.description,
-		isDone: false,
-	};
-
+	const newTodoItem = createTodo(todoRequest.description);
 	idCounter++;
-
-	todos.push(newTodoItem);
-
+	
 	res
 		.setHeader("Access-Control-Allow-Origin", "*")
 		.status(200)
@@ -34,8 +58,12 @@ app.post("/todo-item", (req: Request, res: Response) => {
 });
 
 // Get all the todos
-app.get("/todo-item", (req: Request, res: Response) => {
-	res.setHeader("Access-Control-Allow-Origin", "*").status(200).json(todos);
+app.get("/todo-item", async (req: Request, res: Response) => {
+	const todolist = await getTodos();
+	res
+		.setHeader("Access-Control-Allow-Origin", "*")
+		.status(200)
+		.send(todolist);
 });
 
 app.get("/", (req: Request, res: Response) => {
@@ -43,6 +71,16 @@ app.get("/", (req: Request, res: Response) => {
 		.setHeader("Access-Control-Allow-Origin", "*")
 		.status(200)
 		.send("This is the to-do list backend!");
+});
+
+// Deletes by hashing the id in params into an ObjectId and then search in database for matching ObjectId to delete
+app.delete("/todo-item", async (req: Request, res: Response) => {
+	const id = new mongoose.Types.ObjectId(req.params.id);
+	await Todo.deleteOne({_id:id});
+	res
+		.setHeader("Access-Control-Allow-Origin", "*")
+		.status(200)
+		.send("Delete done");
 });
 
 app.listen(port, () => {
