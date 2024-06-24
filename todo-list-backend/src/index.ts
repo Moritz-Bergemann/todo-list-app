@@ -8,8 +8,6 @@ const app = express();
 const port = 3000;
 
 let todoItems: TodoItem[] = [];
-let counter = 0;
-const todoItems: TodoItem[] = [];
 
 app.use(express.json())
 
@@ -35,6 +33,7 @@ app.get("/get-todos",(req: Request, res: Response) => {
         .status(200)
         .send(JSON.stringify(todoItems))
     ;
+    console.log('get todos request returned:: '+JSON.stringify(todoItems))
 });
 
 app.post("/add-todo",(req: Request, res: Response) => {
@@ -48,6 +47,7 @@ app.post("/add-todo",(req: Request, res: Response) => {
             .send("request had no body")
         ;return
     }
+
     let id
     
     if ( todoItems.length == 0 ) {
@@ -75,17 +75,26 @@ app.post("/add-todo",(req: Request, res: Response) => {
 });
 
 app.post("/remove-todo",(req: Request, res: Response) => {
-    const request = JSON.parse(req.body);
+    const request = req.body;
     const id = request.id;
-    const name = request.name;
+    console.log('attempting removal of element id:: '+id)
 
-    let idx = todoItems.findIndex((value, index, list) => {value.id == id})
+    if ( id == undefined ) {
+        res
+            .setHeader("Access-Control-Allow-Origin","*")
+            .status(400)
+            .send("id undefined")
+        ;console.log("id undefined.  error 400 returned");return
+    }
+
+    let idx = todoItems.findIndex(function (value) {return value.id == id})
 
     if ( idx == -1 ) {
         res
             .setHeader("Access-Control-Allow-Origin","*")
             .status(400)
             .send("no such element")
+        console.log("element of id not found.  error 400 returned")
     }else{
         saveTodoList(todoItems)
         let removedElement = todoItems.splice(idx,1)[0]
@@ -93,11 +102,12 @@ app.post("/remove-todo",(req: Request, res: Response) => {
             .setHeader("Access-Control-Allow-Origin","*")
             .status(200)
             .send(JSON.stringify(removedElement))
+        console.log("element of id found.  element removed and returned with code 200")
     }
 });
 
 app.post("/tag-task-as-complete",(req: Request, res: Response) => {
-    const request = JSON.parse(req.body);
+    const request = req.body;
     const id = request.id
     const strict = request.strict;
     let result
@@ -125,7 +135,7 @@ app.post("/tag-task-as-complete",(req: Request, res: Response) => {
 });
 
 app.post("/tag-task-as-incomplete",(req: Request, res: Response) => {
-    const request = JSON.parse(req.body);
+    const request = req.body;
     const id = request.id
     const strict = request.strict;
     let result
@@ -153,7 +163,7 @@ app.post("/tag-task-as-incomplete",(req: Request, res: Response) => {
 });
 
 function changeCompletionStatusHandler(id: number, strict: boolean, newStatus: boolean) {
-    let idx = todoItems.findIndex((value, _, __) => {value.id == id})
+    let idx = todoItems.findIndex(function (value) {value.id == id})
 
     if ( idx == -1 ) {  throw new Error("no such element")    }
     if ( strict && !(Number(newStatus) ^ Number()) ){   throw new Error("element is already in desired state")    }

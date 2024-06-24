@@ -17,11 +17,8 @@ get tasks:
 remove task:
     post request to "/remove-todo"
     request body must contain a number(int) called id, containing the id of the task
-    and a string called name, containing the name of the task
     returns the deleted task if sucsessful
     response code 422 if task could not be found with message "no task of provided id"
-    response code 422 if task of id was found, but did not have coresponding name with
-    message "task of given id dose not have given name"
 
 set isDone to true for a task:
     post request to "/tag-task-as-complete"
