@@ -13,7 +13,7 @@ app.use(cors());
 mongoose.connect('mongodb+srv://joleenchong:R4KNFakc3Sfy840X@cluster0.jq5llig.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
 	.then(() => console.log('Connected to MongoDB'));
 	
-// State (count the number of requests)
+// State (count the number of requests) - I'll probably replace this with something that will count my MongoDB entries instead
 let idCounter = 0;
 
 // This is a schema that will map to a MongoDB collection and defines the shape of the documents within that collection.
@@ -71,6 +71,22 @@ app.get("/", (req: Request, res: Response) => {
 		.setHeader("Access-Control-Allow-Origin", "*")
 		.status(200)
 		.send("This is the to-do list backend!");
+});
+
+// Updates an existing todo item in the database
+app.put("/todo-item",async (req: Request, res: Response) => {
+	const id = new mongoose.Types.ObjectId(req.params.id);
+	const todo = await Todo.findOne({_id:id});
+	// I'll actually figure out which fields to change later.
+	todo.set({
+		description: req.params.description,
+		isDone: req.params.isDone
+	});
+	const result = await todo.save();
+	res
+		.setHeader("Access-Control-Allow-Origin", "*")
+		.status(200)
+		.send(result);
 });
 
 // Deletes by hashing the id in params into an ObjectId and then search in database for matching ObjectId to delete
