@@ -1,12 +1,15 @@
 import express, { type Request, type Response } from 'express';
 import type { TodoItem } from "./types";
 import { getElement } from './methods';
+import { Console } from 'console';
 
 const app = express();
 const port = 3000;
 
 let counter = 0;
 const todoItems: TodoItem[] = [];
+
+app.use(express.json())
 
 app.get("/", (req: Request, res: Response) => {
     res
@@ -24,6 +27,16 @@ app.get("/get-todos",(req: Request, res: Response) => {
 });
 
 app.post("/add-todo",(req: Request, res: Response) => {
+
+    console.log("adding todo from JSON")
+    console.log(req.body)
+    if ( req.body == undefined ){
+        res
+            .setHeader('Access-Control-Allow-Origin','*')
+            .status(400)
+            .send("request had no body")
+        ;return
+    }
     const newToDo: TodoItem = {
         id: counter,
         name: req.body.name,
@@ -36,7 +49,7 @@ app.post("/add-todo",(req: Request, res: Response) => {
     res
         .setHeader("Access-Control-Allow-Origin","*")
         .status(200)
-        .send(newToDo)
+        .send(JSON.stringify(newToDo))
     ;
 
 });
@@ -52,32 +65,32 @@ app.post("/remove-todo",(req: Request, res: Response) => {
     }catch(e){
         res
             .setHeader("Access-Control-Allow-Origin","*")
-            .status(422)
+            .status(400)
             .send("no task of provided id")
         ;
         return;
     }
     if ( subject.name != name ) {
         res
-        .setHeader("Access-Control-Allow-Origin","*")
-        .status(422)
-        .send("task of given id dose not have given name")
+            .setHeader("Access-Control-Allow-Origin","*")
+            .status(400)
+            .send("task of given id dose not have given name")
         ;
     }else{
         let removedElement = todoItems.splice(idx, 1)[0];
         res
-        .setHeader("Access-Control-Allow-Origin","*")
-        .status(200)
-        .send(JSON.stringify(removedElement))
+            .setHeader("Access-Control-Allow-Origin","*")
+            .status(200)
+            .send(JSON.stringify(removedElement))
         ;
     }
 
 });
 
 app.post("/tag-task-as-complete",(req: Request, res: Response) => {
-    const request = JSON.parse(req.body);
-    const id = request.id
-    const strict = request.strict;
+    const request = JSON.parse(req.body),
+          id = request.id,
+          strict = request.strict;
 
     let subject: TodoItem;
     try{
@@ -85,7 +98,7 @@ app.post("/tag-task-as-complete",(req: Request, res: Response) => {
     }catch(e){
         res
             .setHeader("Access-Control-Allow-Origin","*")
-            .status(422)
+            .status(400)
             .send("no task of provided id")
         ;
         return;
@@ -93,7 +106,7 @@ app.post("/tag-task-as-complete",(req: Request, res: Response) => {
     if ( subject.isDone && strict ){
         res
             .setHeader("Access-Control-Allow-Origin","*")
-            .status(422)
+            .status(400)
             .send("task already complete")
         ;
         return;
@@ -117,7 +130,7 @@ app.post("/tag-task-as-incomplete", (req: Request, res: Response) => {
     }catch(e){
         res
             .setHeader("Access-Control-Allow-Origin","*")
-            .status(422)
+            .status(400)
             .send("no task of provided id")
         ;
         return;
@@ -125,7 +138,7 @@ app.post("/tag-task-as-incomplete", (req: Request, res: Response) => {
     if ( !subject.isDone && strict ){
         res
             .setHeader("Access-Control-Allow-Origin","*")
-            .status(422)
+            .status(400)
             .send("task not yet complete complete")
         ;
         return;
