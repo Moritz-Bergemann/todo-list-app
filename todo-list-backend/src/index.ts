@@ -3,6 +3,7 @@ import { readFileSync, writeFileSync } from 'fs'
 import type { TodoItem } from "./types";
 import { saveTodoList, readTodoList } from './fileIO';
 import { error } from 'console';
+import { json } from 'stream/consumers';
 
 const app = express();
 const port = 3000;
@@ -56,7 +57,7 @@ app.get("/get-todos",(req: Request, res: Response) => {
 });
 
 app.post("/add-todo",express.json(),(req: Request, res: Response) => {
-    console.log("adding todo from request:: "+req.body)
+    console.log("adding todo")
 
     if ( req.body == undefined ){
         res
@@ -98,45 +99,45 @@ app.post("/add-todo",express.json(),(req: Request, res: Response) => {
     ;console.log(JSON.stringify(newTodo));return
 });
 
-app.post("/remove-todo",(req: Request, res: Response) => {
+app.post("/remove-todo",express.json(),(req: Request, res: Response) => {
     console.log("removing todo")
-    const request = req.body;
-
-    if ( request == undefined ) {
+    
+    if ( req.body == undefined ) {
         res
             .setHeader("Access-Control-Allow-Origin","*")
             .status(400)
-            .send("request body undefined")
-        ;console.log("request body undefined.  error 400 returned");return
+            .send("request body undefined.  sending response code 400")
+        ;console.log("request body undefined.  sending response code 400");return
     }
 
-    const id = JSON.parse(request).id
-
-    if ( id == undefined ) {
+    if ( req.body.id == undefined) {
         res
             .setHeader("Access-Control-Allow-Origin","*")
             .status(400)
-            .send("id undefined")
-        ;console.log("id undefined.  error 400 returned");return
+            .send("task id undefined.  sending response code 400")
+        ;console.log("task id undefined.  sending response code 400");return
     }
 
-    let idx = todoItems.findIndex(function (value) {return value.id == id})
+    let id = req.body.id
 
-    if ( idx == -1 ) {
+    console.log("removing task id:: "+id)
+
+    let idx = todoItems.findIndex(function (item) {return item.id == id})
+
+    if ( idx == -1) {
         res
             .setHeader("Access-Control-Allow-Origin","*")
             .status(400)
-            .send("no such element")
-        console.log("element of id not found.  error 400 returned")
-    }else{
-        saveTodoList(todoItems)
-        let removedElement = todoItems.splice(idx,1)[0]
-        res
-            .setHeader("Access-Control-Allow-Origin","*")
-            .status(200)
-            .send(JSON.stringify(removedElement))
-        console.log("element of id found.  element removed and returned with code 200")
+            .send("no element in list of requested index")
+        ;console.log("no element in list of requested index");return
     }
+
+    let removedElement = todoItems.splice(idx,1)[0]
+
+    res
+        .setHeader("Access-Control-Allow-Origin","*")
+        .status(200)
+        .send(JSON.stringify(removedElement))
 });
 
 app.post("/tag-task-as-complete",(req: Request, res: Response) => {
