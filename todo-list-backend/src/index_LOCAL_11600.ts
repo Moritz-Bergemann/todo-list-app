@@ -7,33 +7,13 @@ import { error } from 'console';
 const app = express();
 const port = 3000;
 
-// Just putting these here for debugging purposes
-let count = 0;
-
 let todoItems: TodoItem[] = [];
-
-app.use(express.json())
 
 app.get("/", (req: Request, res: Response) => {
     res
         .setHeader("Access-Control-Allow-Origin","*")
         .status(200)
         .send("ping recieved");
-});
-
-// Just putting these here for debugging purposes
-app.get("/ping",  (req: Request, res: Response) => {
-    count++;
-    
-    let responseContent = {
-        message: "pong",
-        count: count,
-    };
-    
-    res
-    .setHeader('Access-Control-Allow-Origin', '*')
-    .status(200)
-    .json(responseContent);
 });
 
 app.get("/refresh-todos",(req: Request, res: Response) => {
@@ -51,28 +31,9 @@ app.get("/get-todos",(req: Request, res: Response) => {
         .status(200)
         .send(JSON.stringify(todoItems))
     ;
-    console.log('get todos request returned:: '+JSON.stringify(todoItems))
 });
 
 app.post("/add-todo",(req: Request, res: Response) => {
-
-    console.log("adding todo from JSON")
-    console.log(req.body)
-    if ( req.body == undefined ) {
-        res
-            .setHeader('Access-Control-Allow-Origin','*')
-            .status(400)
-            .send("request had no body")
-        ;console.log("failed to add task as request body was unidentified.  respoded with code 400");return
-    }
-    if ( req.body.name == undefined ) {
-        res
-            .setHeader("Access-Control-Allow-Origin","*")
-            .status(400)
-            .send("task name undefined")
-        ;console.log("failed to add task as task name was unidentified.  responded with code 400");return
-    }
-
     let id
     
     if ( todoItems.length == 0 ) {
@@ -94,34 +55,23 @@ app.post("/add-todo",(req: Request, res: Response) => {
     res
         .setHeader("Access-Control-Allow-Origin","*")
         .status(200)
-        .send(JSON.stringify(newToDo))
+        .send(newToDo)
     ;
 
-    console.log("adding task to list")
-    console.log(JSON.stringify(newToDo))
 });
 
 app.post("/remove-todo",(req: Request, res: Response) => {
-    const request = req.body;
+    const request = JSON.parse(req.body);
     const id = request.id;
-    console.log('attempting removal of element id:: '+id)
+    const name = request.name;
 
-    if ( id == undefined ) {
-        res
-            .setHeader("Access-Control-Allow-Origin","*")
-            .status(400)
-            .send("id undefined")
-        ;console.log("id undefined.  error 400 returned");return
-    }
-
-    let idx = todoItems.findIndex(function (value) {return value.id == id})
+    let idx = todoItems.findIndex((value, index, list) => {value.id == id})
 
     if ( idx == -1 ) {
         res
             .setHeader("Access-Control-Allow-Origin","*")
             .status(400)
             .send("no such element")
-        console.log("element of id not found.  error 400 returned")
     }else{
         saveTodoList(todoItems)
         let removedElement = todoItems.splice(idx,1)[0]
@@ -129,12 +79,11 @@ app.post("/remove-todo",(req: Request, res: Response) => {
             .setHeader("Access-Control-Allow-Origin","*")
             .status(200)
             .send(JSON.stringify(removedElement))
-        console.log("element of id found.  element removed and returned with code 200")
     }
 });
 
 app.post("/tag-task-as-complete",(req: Request, res: Response) => {
-    const request = req.body;
+    const request = JSON.parse(req.body);
     const id = request.id
     const strict = request.strict;
     let result
@@ -162,7 +111,7 @@ app.post("/tag-task-as-complete",(req: Request, res: Response) => {
 });
 
 app.post("/tag-task-as-incomplete",(req: Request, res: Response) => {
-    const request = req.body;
+    const request = JSON.parse(req.body);
     const id = request.id
     const strict = request.strict;
     let result
@@ -190,7 +139,7 @@ app.post("/tag-task-as-incomplete",(req: Request, res: Response) => {
 });
 
 function changeCompletionStatusHandler(id: number, strict: boolean, newStatus: boolean) {
-    let idx = todoItems.findIndex(function (value) {value.id == id})
+    let idx = todoItems.findIndex((value, _, __) => {value.id == id})
 
     if ( idx == -1 ) {  throw new Error("no such element")    }
     if ( strict && !(Number(newStatus) ^ Number()) ){   throw new Error("element is already in desired state")    }

@@ -52,7 +52,7 @@ Things to work on
             taskName = tempName;
             await fetch("http://localhost:3000/add-todo", {
                 method: 'POST',
-                body: {name: taskName}
+                body: JSON.stringify({"name": taskName})
             });
             
             // let response = await fetch("http://localhost:3000/add-todo", {taskName});
@@ -66,10 +66,6 @@ Things to work on
 
             // Pushes string to an array
             taskArray.push(taskName)
-        }
-
-        else{
-            taskName = undefined;
         }
     }
 

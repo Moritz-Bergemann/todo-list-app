@@ -1,0 +1,20 @@
+{
+  "name": "todo-list-app",
+  "version": "1.0.0",
+  "description": "For this tutorial, I am assuming you are running Linux! Mac should work fine too, though you might have to go looking for the MacOS version of some tools. If you're on Windows, either (1) [install WSL](https://learn.microsoft.com/en-us/windows/wsl/install) or (2) be prepared to find your own alternatves.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.14.8",
+    "typescript": "^5.5.2"
+  }
+}
