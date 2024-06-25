@@ -51,7 +51,11 @@ Things to work on
             taskName = tempName;
             await fetch("http://localhost:3000/add-todo", {
                 method: 'POST',
-                body: JSON.stringify({"name": taskName})
+                body: JSON.stringify({"name": taskName}),
+                headers: {
+                    "Content-Type": "application/json",
+                    mode: "cors"
+                }
             });
             
             // let response = await fetch("http://localhost:3000/add-todo", {taskName});
