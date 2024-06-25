@@ -7,12 +7,14 @@ import { error } from 'console';
 const app = express();
 const port = 3000;
 
+// generic debugging methods.  will log the request type and url for every request
+app.use((req: Request, res: Response) => {console.log(req.method)})
+app.use((req: Request, res: Response) => {console.log(req.url)})
+
 // Just putting these here for debugging purposes
 let count = 0;
 
 let todoItems: TodoItem[] = [];
-
-app.use(express.json())
 
 app.get("/", (req: Request, res: Response) => {
     res
@@ -65,13 +67,16 @@ app.post("/add-todo",(req: Request, res: Response) => {
             .send("request had no body")
         ;console.log("failed to add task as request body was unidentified.  respoded with code 400");return
     }
-    if ( req.body.name == undefined ) {
+    let request = JSON.parse(req.body)
+    if ( request.name == undefined ) {
         res
             .setHeader("Access-Control-Allow-Origin","*")
             .status(400)
             .send("task name undefined")
         ;console.log("failed to add task as task name was unidentified.  responded with code 400");return
     }
+
+    request = request.name
 
     let id
     
@@ -83,7 +88,7 @@ app.post("/add-todo",(req: Request, res: Response) => {
 
     const newToDo: TodoItem = {
         id: id,
-        name: req.body.name,
+        name: request,
         isDone: false
     };
 
@@ -103,8 +108,16 @@ app.post("/add-todo",(req: Request, res: Response) => {
 
 app.post("/remove-todo",(req: Request, res: Response) => {
     const request = req.body;
-    const id = request.id;
-    console.log('attempting removal of element id:: '+id)
+
+    if ( request == undefined ) {
+        res
+            .setHeader("Access-Control-Allow-Origin","*")
+            .status(400)
+            .send("request body undefined")
+        ;console.log("request body undefined.  error 400 returned");return
+    }
+
+    const id = JSON.parse(request).id
 
     if ( id == undefined ) {
         res
