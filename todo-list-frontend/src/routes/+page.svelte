@@ -14,7 +14,6 @@ Things to work on
 
 
 <script lang="ts">
-	import type { stringify } from "querystring";
     import type { TodoItem } from "./types";
 
     let pingResponseMessage: string;
@@ -52,7 +51,7 @@ Things to work on
             taskName = tempName;
             await fetch("http://localhost:3000/add-todo", {
                 method: 'POST',
-                body: {name: taskName}
+                body: JSON.stringify({name: taskName})
             });
             
             // let response = await fetch("http://localhost:3000/add-todo", {taskName});
@@ -76,9 +75,9 @@ Things to work on
     async function deleteTask() {
         if(tempName != '') {
             taskName = tempName;
-            fetch("http://localhost:3000/remove-todo", {
+            await fetch("http://localhost:3000/remove-todo", {
                 method: 'POST',
-                body: {id: 0}
+                body: JSON.stringify({"id": 0})
             });
             
             // let response = await fetch("http://localhost:3000/add-todo", {taskName});
