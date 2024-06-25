@@ -7,16 +7,13 @@ import { error } from 'console';
 const app = express();
 const port = 3000;
 
-// generic debugging methods.  will log the request type and url for every request
-app.use((req: Request, res: Response) => {console.log(req.method)})
-app.use((req: Request, res: Response) => {console.log(req.url)})
-
 // Just putting these here for debugging purposes
 let count = 0;
 
 let todoItems: TodoItem[] = [];
 
 app.get("/", (req: Request, res: Response) => {
+    console.log("pinging")
     res
         .setHeader("Access-Control-Allow-Origin","*")
         .status(200)
@@ -39,6 +36,7 @@ app.get("/ping",  (req: Request, res: Response) => {
 });
 
 app.get("/refresh-todos",(req: Request, res: Response) => {
+    console.log("refreshing todo list")
     todoItems = readTodoList()
     res
         .setHeader("Access-Control-Allow-Origin","*")
@@ -48,6 +46,7 @@ app.get("/refresh-todos",(req: Request, res: Response) => {
 });
 
 app.get("/get-todos",(req: Request, res: Response) => {
+    console.log("sending todo list")
     res
         .setHeader("Access-Control-Allow-Origin","*")
         .status(200)
@@ -56,57 +55,51 @@ app.get("/get-todos",(req: Request, res: Response) => {
     console.log('get todos request returned:: '+JSON.stringify(todoItems))
 });
 
-app.post("/add-todo",(req: Request, res: Response) => {
+app.post("/add-todo",express.json(),(req: Request, res: Response) => {
+    console.log("adding todo from request:: "+req.body)
 
-    console.log("adding todo from JSON")
-    console.log(req.body)
-    if ( req.body == undefined ) {
-        res
-            .setHeader('Access-Control-Allow-Origin','*')
-            .status(400)
-            .send("request had no body")
-        ;console.log("failed to add task as request body was unidentified.  respoded with code 400");return
-    }
-    let request = JSON.parse(req.body)
-    if ( request.name == undefined ) {
+    if ( req.body == undefined ){
         res
             .setHeader("Access-Control-Allow-Origin","*")
             .status(400)
-            .send("task name undefined")
-        ;console.log("failed to add task as task name was unidentified.  responded with code 400");return
+            .send("request body undefined.  sending response code 400")
+        ;console.log("request body undefined.  sending response code 400");return
     }
 
-    request = request.name
+    if ( req.body.name == undefined ) {
+        res
+            .setHeader("Access-Control-Allow-Origin","*")
+            .status(400)
+            .send("task name undefined.  sending response code 400")
+        ;console.log("task name undefined.  sending response code 400");return
+    }
 
     let id
-    
-    if ( todoItems.length == 0 ) {
+    if ( todoItems.length == 0){
         id = 0
     }else{
         id = todoItems[todoItems.length-1].id + 1
     }
 
-    const newToDo: TodoItem = {
+    const newTodo = {
         id: id,
-        name: request,
+        name: req.body.name,
         isDone: false
-    };
+    }
 
-    todoItems.push(newToDo);
+    todoItems.push(newTodo)
 
     saveTodoList(todoItems)
 
     res
         .setHeader("Access-Control-Allow-Origin","*")
         .status(200)
-        .send(JSON.stringify(newToDo))
-    ;
-
-    console.log("adding task to list")
-    console.log(JSON.stringify(newToDo))
+        .send(JSON.stringify(newTodo))
+    ;console.log(JSON.stringify(newTodo));return
 });
 
 app.post("/remove-todo",(req: Request, res: Response) => {
+    console.log("removing todo")
     const request = req.body;
 
     if ( request == undefined ) {
@@ -147,6 +140,7 @@ app.post("/remove-todo",(req: Request, res: Response) => {
 });
 
 app.post("/tag-task-as-complete",(req: Request, res: Response) => {
+    console.log("tagging task as complete")
     const request = req.body;
     const id = request.id
     const strict = request.strict;
@@ -175,6 +169,7 @@ app.post("/tag-task-as-complete",(req: Request, res: Response) => {
 });
 
 app.post("/tag-task-as-incomplete",(req: Request, res: Response) => {
+    console.log("tagging task as incomplete")
     const request = req.body;
     const id = request.id
     const strict = request.strict;
