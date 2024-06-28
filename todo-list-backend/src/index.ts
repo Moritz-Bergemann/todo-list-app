@@ -1,5 +1,5 @@
 import express, { type Request, type Response } from "express";
-import type { TodoItem, CreateTodoItemRequest } from "./types";
+import type { TodoItem, CreateTodoItemRequest, DeleteTodoItemRequest, UpdateTodoItemRequest } from "./types";
 // import cors from "cors";
 import cors from "cors";
 
@@ -75,23 +75,21 @@ app.get("/", (req: Request, res: Response) => {
 
 // Updates an existing todo item in the database
 app.put("/todo-item",async (req: Request, res: Response) => {
-	const id = new mongoose.Types.ObjectId(req.params.id);
-	const todo = await Todo.findOne({_id:id});
-	// I'll actually figure out which fields to change later.
-	todo.set({
-		description: req.params.description,
-		isDone: req.params.isDone
-	});
-	const result = await todo.save();
+	const todoRequest: UpdateTodoItemRequest = req.body;
+
+	const id = new mongoose.Types.ObjectId(todoRequest.id);
+	const todo = await Todo.findOneAndUpdate({_id:id}, {isDone: todoRequest.isDone});
+
 	res
 		.setHeader("Access-Control-Allow-Origin", "*")
 		.status(200)
-		.send(result);
+		.send(todo);
 });
 
 // Deletes by hashing the id in params into an ObjectId and then search in database for matching ObjectId to delete
 app.delete("/todo-item", async (req: Request, res: Response) => {
-	const id = new mongoose.Types.ObjectId(req.params.id);
+	const todoRequest: DeleteTodoItemRequest = req.body;
+	const id = new mongoose.Types.ObjectId(todoRequest.id);
 	await Todo.deleteOne({_id:id});
 	res
 		.setHeader("Access-Control-Allow-Origin", "*")

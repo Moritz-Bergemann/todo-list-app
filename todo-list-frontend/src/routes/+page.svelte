@@ -32,6 +32,47 @@ async function addTodoButtonclick() {
 	getTodos();
 }
 
+async function delTodoButtonClick(todoID: number) {
+	const deleteTodoItemRequest: DeleteTodoItemRequest = {
+		id: todoID,
+	};
+	
+	const deleteTodoItemRequestJson = JSON.stringify(deleteTodoItemRequest);
+
+	const response = await fetch("http://localhost:3000/todo-item", {
+		method: "DELETE",
+		headers: {
+			"Content-Type": "application/json",
+			mode: "no-cors",
+		},
+		body: deleteTodoItemRequestJson,
+	});
+
+	console.log(response);
+
+	// Once the new todo is added, re-ask server for to-do items (NOTE: This is flawed in a number of ways. Why?)
+	getTodos();
+}
+
+async function onCheckboxClick(isDone: boolean, id: number) {
+	const updateTodoItemRequest: UpdateTodoItemRequest = {
+		id: id,
+		isDone: !isDone
+	};
+	const updateTodoItemRequestJson = JSON.stringify(updateTodoItemRequest);
+	const response = await fetch("http://localhost:3000/todo-item", {
+		method: "PUT",
+		headers: {
+			"Content-Type": "application/json",
+			mode: "cors",
+		},
+		body: updateTodoItemRequestJson,
+	});
+
+	console.log(response);
+	getTodos();	
+}
+
 // This runs when the page is loaded into the browser
 onMount(() => {
 	getTodos();
@@ -45,12 +86,23 @@ onMount(() => {
 <button on:click={addTodoButtonclick}>Add new todo</button>
 
 {#each todos as todo}
-	<div class="todo-item">[{todo.isDone ? "X" : " "}] {todo.description}</div>
+	<div class={todo.isDone ? "done" : "todo-item"}>
+		<input type="checkbox" bind:checked={todo.isDone} on:click={() => onCheckboxClick(todo.isDone, todo.id)}/>
+		{todo.description}
+		<button on:click={() => delTodoButtonClick(todo.id)}>X</button>
+	</div>
 {/each}
 
-
 <style>
+	/* Lost values */
 	.todo-item {
+		background-color: cornflowerblue;
+		width: 200px;
+		margin: 5px;
+		padding: 10px;
+	}
+	.done {
+		opacity: 0.4;
 		background-color: cornflowerblue;
 		width: 200px;
 		margin: 5px;
