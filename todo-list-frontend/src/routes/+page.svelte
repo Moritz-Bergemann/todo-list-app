@@ -1,9 +1,6 @@
 <script lang="ts">
 import { onMount } from "svelte";
 
-let pingResponseMessage: string;
-let pingResponseCount: number;
-
 let todos: TodoItem[] = [];
 let newTodoDescription = "";
 

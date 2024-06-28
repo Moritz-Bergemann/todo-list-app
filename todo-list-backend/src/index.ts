@@ -32,7 +32,7 @@ async function createTodo(description:String) {
 		id: idCounter,
 		description: description,
 		isDone: false
-	})
+	});
 
 	// This saves the new todo item into the database and stores the result in a constant.
 	return await newTodoItem.save();
