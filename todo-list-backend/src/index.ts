@@ -35,7 +35,6 @@ app.get("/ping", (req: Request, res: Response) => {
     };
 
     res
-        .setHeader('Access-Control-Allow-Origin', '*')
         .status(200)
         .json(responseContent);
 });
@@ -44,7 +43,6 @@ app.get("/refresh-todos", (req: Request, res: Response) => {
     console.log("refreshing todo list")
     todoItems = readTodoList()
     res
-        .setHeader("Access-Control-Allow-Origin", "*")
         .status(200)
         .send(JSON.stringify(todoItems))
         ;
@@ -64,7 +62,6 @@ app.post("/add-todo", express.json(), (req: Request, res: Response) => {
 
     if (req.body == undefined) {
         res
-            .setHeader("Access-Control-Allow-Origin", "*")
             .status(400)
             .send("request body undefined.  sending response code 400")
             ; console.log("request body undefined.  sending response code 400"); return
@@ -72,7 +69,6 @@ app.post("/add-todo", express.json(), (req: Request, res: Response) => {
 
     if (req.body.name == undefined) {
         res
-            .setHeader("Access-Control-Allow-Origin", "*")
             .status(400)
             .send("task name undefined.  sending response code 400")
             ; console.log("task name undefined.  sending response code 400"); return
@@ -96,7 +92,6 @@ app.post("/add-todo", express.json(), (req: Request, res: Response) => {
     saveTodoList(todoItems)
 
     res
-        .setHeader("Access-Control-Allow-Origin", "*")
         .status(200)
         .send(JSON.stringify(newTodo))
         ; console.log(JSON.stringify(newTodo)); return
@@ -107,7 +102,6 @@ app.post("/remove-todo", express.json(), (req: Request, res: Response) => {
 
     if (req.body == undefined) {
         res
-            .setHeader("Access-Control-Allow-Origin", "*")
             .status(400)
             .send("request body undefined.  sending response code 400")
             ; console.log("request body undefined.  sending response code 400"); return
@@ -115,7 +109,6 @@ app.post("/remove-todo", express.json(), (req: Request, res: Response) => {
 
     if (req.body.id == undefined) {
         res
-            .setHeader("Access-Control-Allow-Origin", "*")
             .status(400)
             .send("task id undefined.  sending response code 400")
             ; console.log("task id undefined.  sending response code 400"); return
@@ -129,7 +122,6 @@ app.post("/remove-todo", express.json(), (req: Request, res: Response) => {
 
     if (idx == -1) {
         res
-            .setHeader("Access-Control-Allow-Origin", "*")
             .status(400)
             .send("no element in list of requested index")
             ; console.log("no element in list of requested index"); return
@@ -138,7 +130,6 @@ app.post("/remove-todo", express.json(), (req: Request, res: Response) => {
     let removedElement = todoItems.splice(idx, 1)[0]
 
     res
-        .setHeader("Access-Control-Allow-Origin", "*")
         .status(200)
         .send(JSON.stringify(removedElement))
 });
@@ -154,13 +145,11 @@ app.post("/tag-task-as-complete", (req: Request, res: Response) => {
     } catch (e) {
         if (e instanceof Error) {
             res
-                .setHeader("Access-Control-Allow-Origin", "*")
                 .status(400)
                 .send(e.message)
                 ;
         } else {
             res
-                .setHeader("Access-Control-Allow-Origin", "*")
                 .status(500)
                 .send("unknown backend error")
         }
@@ -183,13 +172,11 @@ app.post("/tag-task-as-incomplete", (req: Request, res: Response) => {
     } catch (e) {
         if (e instanceof Error) {
             res
-                .setHeader("Access-Control-Allow-Origin", "*")
                 .status(400)
                 .send(e.message)
                 ;
         } else {
             res
-                .setHeader("Access-Control-Allow-Origin", "*")
                 .status(500)
                 .send("unknown backend error")
         }
