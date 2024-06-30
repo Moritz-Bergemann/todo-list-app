@@ -11,7 +11,7 @@ app.use(cors());
 // State (count the number of requests)
 let idCounter = 0;
 
-const todos: TodoItem[] = [];
+let todos: TodoItem[] = [];
 
 // Add a todo item
 app.post("/todo-item", (req: Request, res: Response) => {
@@ -36,6 +36,55 @@ app.post("/todo-item", (req: Request, res: Response) => {
 // Get all the todos
 app.get("/todo-item", (req: Request, res: Response) => {
 	res.setHeader("Access-Control-Allow-Origin", "*").status(200).json(todos);
+});
+
+// Check a todo
+app.post("/todo-item/:todoId/check", (req: Request, res: Response) => {
+	// Get the to-do item
+	const todoId = Number.parseInt(req.params.todoId);
+	const todo = todos.find((item) => item.id === todoId);
+
+	if (!todo) {
+		res.status(404).send(`Todo with ID '${todoId}' not found`);
+		return;
+	}
+
+	todo.isDone = true;
+
+	res.setHeader("Access-Control-Allow-Origin", "*").status(200).json(todo);
+});
+
+// Uncheck a todo
+app.post("/todo-item/:todoId/uncheck", (req: Request, res: Response) => {
+	// Get the to-do item
+	const todoId = Number.parseInt(req.params.todoId);
+	const todo = todos.find((item) => item.id === todoId);
+
+	if (!todo) {
+		res.status(404).send(`Todo with ID '${todoId}' not found`);
+		return;
+	}
+
+	todo.isDone = false;
+
+	res.setHeader("Access-Control-Allow-Origin", "*").status(200).json(todo);
+});
+
+// Delete a todo
+app.delete("/todo-item/:todoId", (req: Request, res: Response) => {
+	const todoId = Number.parseInt(req.params.todoId);
+
+	const initLength = todos.length;
+	todos = todos.filter((todo) => todo.id !== todoId);
+
+	if (todos.length === initLength) {
+		res.status(404).send(`Todo with ID '${todoId}' not found`);
+	} else {
+		res
+			.setHeader("Access-Control-Allow-Origin", "*")
+			.status(200)
+			.send("item deleted");
+	}
 });
 
 app.get("/", (req: Request, res: Response) => {
