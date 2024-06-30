@@ -6,7 +6,11 @@ import cors from "cors";
 const app = express();
 const port = 3000;
 app.use(express.json());
-app.use(cors());
+app.use(
+	cors({
+		methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
+	}),
+);
 
 // State (count the number of requests)
 let idCounter = 0;
@@ -27,22 +31,16 @@ app.post("/todo-item", (req: Request, res: Response) => {
 
 	todos.push(newTodoItem);
 
-	res
-		.setHeader("Access-Control-Allow-Origin", "*")
-		.status(200)
-		.send(newTodoItem); // In REST APIs, it is customary for create-type requests (POST) to return the entire created item
+	res.status(200).send(newTodoItem); // In REST APIs, it is customary for create-type requests (POST) to return the entire created item
 });
 
 // Get all the todos
 app.get("/todo-item", (req: Request, res: Response) => {
-	res.setHeader("Access-Control-Allow-Origin", "*").status(200).json(todos);
+	res.status(200).json(todos);
 });
 
 app.get("/", (req: Request, res: Response) => {
-	res
-		.setHeader("Access-Control-Allow-Origin", "*")
-		.status(200)
-		.send("This is the to-do list backend!");
+	res.status(200).send("This is the to-do list backend!");
 });
 
 app.listen(port, () => {
