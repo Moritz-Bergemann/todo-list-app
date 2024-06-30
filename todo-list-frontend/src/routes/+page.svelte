@@ -25,6 +25,7 @@ Things to work on
     let numTasks = 0;
  
     async function ping() {
+        console.log('preforming ping')
         // Make a GET request to the ping-pong backend API 
         let response = await fetch("http://localhost:3000/ping");
         
@@ -34,6 +35,7 @@ Things to work on
         // Set our pingResponse variable to change the UI
         pingResponseMessage = responseJson.message;
         pingResponseCount = responseJson.count;
+        console.log('ping complete')
     }
 
     async function addTask() {
@@ -48,16 +50,16 @@ Things to work on
         // }
 
         if(tempName != '') {
+            console.log('adding todo of name:: '+taskName)
             taskName = tempName;
-
             await fetch("http://localhost:3000/add-todo", {
                 method: 'POST',
                 body: JSON.stringify({name: taskName}),
                 headers: {
                     "Content-Type": "application/json",
                 },
-                mode: "cors"
             });
+            
             
             // let response = await fetch("http://localhost:3000/add-todo", {taskName});
             let response = await fetch("http://localhost:3000/get-todos");
@@ -70,10 +72,12 @@ Things to work on
 
             // Pushes string to an array
             taskArray.push(taskName)
+            console.log('todo added of name:: '+taskName)
         }
     }
 
     async function deleteTask() {
+        console.log('deleting task of with id:: 0')
         if(tempName != '') {
             taskName = tempName;
             await fetch("http://localhost:3000/remove-todo", {
@@ -92,9 +96,10 @@ Things to work on
         }
 
         else{
-            taskName = undefined;
+            taskName = 'undefined';
         }
         // Delete tasks to the Backend
+        console.log('deleted task of id:: 0')
     }
     
     async function displayTasks() {
