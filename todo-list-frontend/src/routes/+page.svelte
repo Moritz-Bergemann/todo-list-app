@@ -61,7 +61,7 @@ async function onCheckboxClick(isDone: boolean, id: number) {
 	};
 	const updateTodoItemRequestJson = JSON.stringify(updateTodoItemRequest);
 	const response = await fetch("http://localhost:3000/todo-item", {
-		method: "PUT",
+		method: "PATCH",
 		headers: {
 			"Content-Type": "application/json",
 			mode: "no-cors",

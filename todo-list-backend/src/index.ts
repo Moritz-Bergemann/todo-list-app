@@ -80,7 +80,7 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 // Updates an existing todo item in the database
-app.put("/todo-item",async (req: Request, res: Response) => {
+app.patch("/todo-item",async (req: Request, res: Response) => {
 	const todoRequest: UpdateTodoItemRequest = req.body;
 
 	const todo = await Todo.findOneAndUpdate({id:todoRequest.id}, {isDone: todoRequest.isDone});
