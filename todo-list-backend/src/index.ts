@@ -7,7 +7,10 @@ const app = express();
 const port = 3000;
 const mongoose = require('mongoose');
 app.use(express.json());
-app.use(cors());
+app.use(cors(
+	{ 
+		"methods": "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS", 
+	}));
 
 // This has my password hardcoded, teehee!
 mongoose.connect('mongodb+srv://joleenchong:R4KNFakc3Sfy840X@cluster0.jq5llig.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
@@ -60,6 +63,9 @@ app.post("/todo-item", (req: Request, res: Response) => {
 // Get all the todos
 app.get("/todo-item", async (req: Request, res: Response) => {
 	const todolist = await getTodos();
+	//counts the number of documents in the Todo collection
+	idCounter = await Todo.countDocuments({});
+
 	res
 		.setHeader("Access-Control-Allow-Origin", "*")
 		.status(200)
@@ -77,8 +83,7 @@ app.get("/", (req: Request, res: Response) => {
 app.put("/todo-item",async (req: Request, res: Response) => {
 	const todoRequest: UpdateTodoItemRequest = req.body;
 
-	const id = new mongoose.Types.ObjectId(todoRequest.id);
-	const todo = await Todo.findOneAndUpdate({_id:id}, {isDone: todoRequest.isDone});
+	const todo = await Todo.findOneAndUpdate({id:todoRequest.id}, {isDone: todoRequest.isDone});
 
 	res
 		.setHeader("Access-Control-Allow-Origin", "*")
@@ -89,8 +94,7 @@ app.put("/todo-item",async (req: Request, res: Response) => {
 // Deletes by hashing the id in params into an ObjectId and then search in database for matching ObjectId to delete
 app.delete("/todo-item", async (req: Request, res: Response) => {
 	const todoRequest: DeleteTodoItemRequest = req.body;
-	const id = new mongoose.Types.ObjectId(todoRequest.id);
-	await Todo.deleteOne({_id:id});
+	await Todo.deleteOne({id:todoRequest.id});
 	res
 		.setHeader("Access-Control-Allow-Origin", "*")
 		.status(200)

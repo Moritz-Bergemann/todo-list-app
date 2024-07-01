@@ -64,7 +64,7 @@ async function onCheckboxClick(isDone: boolean, id: number) {
 		method: "PUT",
 		headers: {
 			"Content-Type": "application/json",
-			mode: "cors",
+			mode: "no-cors",
 		},
 		body: updateTodoItemRequestJson,
 	});
