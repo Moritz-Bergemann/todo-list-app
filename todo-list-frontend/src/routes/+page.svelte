@@ -23,31 +23,8 @@ Things to work on
     let taskArray: any[] = [];
     let taskJSON: TodoItem[] = [];
     let numTasks = 0;
- 
-    async function ping() {
-        console.log('preforming ping')
-        // Make a GET request to the ping-pong backend API 
-        let response = await fetch("http://localhost:3000/ping");
-        
-        // Get the JSON body from the request
-        let responseJson = await response.json();
- 
-        // Set our pingResponse variable to change the UI
-        pingResponseMessage = responseJson.message;
-        pingResponseCount = responseJson.count;
-        console.log('ping complete')
-    }
 
     async function addTask() {
-        // Add tasks to the Backend
-        // if (tempName == '') {
-        //     taskName = undefined;
-        // }
-        // else{
-        //     taskName = tempName;
-        //     taskArray.push(taskName)
-        //     taskArray = taskArray;
-        // }
 
         if(tempName != '') {
             console.log('adding todo of name:: '+taskName)
@@ -77,15 +54,23 @@ Things to work on
     }
 
     async function deleteTask() {
-        console.log('deleting task of with id:: 0')
+        console.log('deleting task of with name:: '+tempName)
         if(tempName != '') {
-            taskName = tempName;
-            await fetch("http://localhost:3000/remove-todo", {
-                method: 'POST',
-                body: JSON.stringify({"id": 0})
-            });
+            let task = taskJSON.find(function (value:TodoItem) {   return value.name == tempName  })
+            if (    task != undefined   )
+            {
+                console.log('task found with name::\n'+JSON.stringify(task))
+                await fetch("http://localhost:3000/remove-todo", {
+                    method: 'POST',
+                    body: JSON.stringify({"id": task.id}),
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                });
+            }else{
+                console.log('no task found of requested name')
+            }
             
-            // let response = await fetch("http://localhost:3000/add-todo", {taskName});
             let response = await fetch("http://localhost:3000/get-todos");
 
             // Get the JSON body from the request
@@ -94,15 +79,56 @@ Things to work on
             // Set our pingResponse variable to change the UI
             taskJSON = responseJson.name;
         }
-
-        else{
-            taskName = 'undefined';
-        }
         // Delete tasks to the Backend
-        console.log('deleted task of id:: 0')
+        console.log('deleted task with name:: '+tempName)
+    }
+
+    async function markAsDone() {
+        console.log('marking as done task of name:: '+tempName)
+
+        if(tempName != ''){
+            let task = taskJSON.find(function (value:TodoItem) {   return value.name == tempName  })
+            if (    task != undefined   )
+            {
+                console.log('task found under name::\n'+JSON.stringify(task))
+                await fetch("http://localhost:3000/tag-task-as-complete", {
+                    method: "POST",
+                    body: JSON.stringify({"id": task.id, "strict": false}),
+                    headers: {"Content-Type": "application/json"}
+                })
+            }
+        }else{
+            console.log('could not find task of requested name')
+        }
+        displayTasks()
+
+        console.log('marked as done task of name:: '+tempName)
+    }
+
+    async function markAsNotDone() {
+        console.log('marking as not done task of name:: '+tempName)
+
+        if(tempName != ''){
+            let task = taskJSON.find(function (value:TodoItem) {   return value.name == tempName  })
+            if (    task != undefined   )
+            {
+                console.log('task found under name::\n'+JSON.stringify(task))
+                await fetch("http://localhost:3000/tag-task-as-incomplete", {
+                    method: "POST",
+                    body: JSON.stringify({"id": task.id, "strict": false}),
+                    headers: {"Content-Type": "application/json"}
+                })
+            }
+        }else{
+            console.log('could not find task of requested name')
+        }
+        displayTasks()
+
+        console.log('marked as not done task of name:: '+tempName)
     }
     
     async function displayTasks() {
+        console.log('displaying list::\n'+JSON.stringify(taskJSON))
         // Update tasks to the Backend
         let response = await fetch("http://localhost:3000/get-todos");
 
@@ -111,34 +137,25 @@ Things to work on
 
         // Set our pingResponse variable to change the UI
         taskJSON = responseJson;
+        console.log('displayed list::\n'+JSON.stringify(taskJSON))
     }
     
 </script>
- 
-<h1>POGGERS Todo List</h1>
 
-<div>
-    <button on:click={ping}>
-        Do Ping
-    </button>
-</div>
+<h1>POGGERS Todo List</h1>
 
 {#if pingResponseMessage != undefined}
     <p>The ping response message was: {pingResponseMessage}</p>
     <p>The ping response count was: {pingResponseCount}</p>
 {/if}
 
-<p>The task you added was: {taskName}</p>
-<p>taskJSON = {JSON.stringify(taskJSON)}</p>
-
 <p>Current Tasks:</p>
 <p>
     {#each taskJSON as task, i}
-        taskName: {taskArray[task.id]}
-        <br>
-        taskID: {task.id}
-        <br>
-        taskBool: {task.isDone}
+        {task.id}:: {task.name}
+        {#if task.isDone}
+            |/
+        {/if}
         <br>
     {/each} 
 </p>
@@ -158,7 +175,20 @@ Things to work on
 </div>
 
 <div>
+    <button on:click={markAsDone}>
+        Mark task as complete
+    </button>
+</div>
+
+<div>
+    <button on:click={markAsNotDone}>
+        Mark task is incomplete
+    </button>
+</div>
+
+<div>
     <button on:click={displayTasks}>
         Display Task
     </button>
 </div>
+

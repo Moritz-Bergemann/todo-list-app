@@ -134,7 +134,7 @@ app.post("/remove-todo", express.json(), (req: Request, res: Response) => {
         .send(JSON.stringify(removedElement))
 });
 
-app.post("/tag-task-as-complete", (req: Request, res: Response) => {
+app.post("/tag-task-as-complete", express.json(), (req: Request, res: Response) => {
     console.log("tagging task as complete")
     const request = req.body;
     const id = request.id
@@ -159,9 +159,10 @@ app.post("/tag-task-as-complete", (req: Request, res: Response) => {
         .setHeader("Access-Control-Allow-Origin", "*")
         .status(200)
         .send(JSON.stringify(result))
+    console.log('task tagged as complete')
 });
 
-app.post("/tag-task-as-incomplete", (req: Request, res: Response) => {
+app.post("/tag-task-as-incomplete", express.json(), (req: Request, res: Response) => {
     console.log("tagging task as incomplete")
     const request = req.body;
     const id = request.id
@@ -189,7 +190,8 @@ app.post("/tag-task-as-incomplete", (req: Request, res: Response) => {
 });
 
 function changeCompletionStatusHandler(id: number, strict: boolean, newStatus: boolean) {
-    let idx = todoItems.findIndex(function (value) { value.id == id })
+    console.log('changeing status of:: '+id+" ::to:: "+newStatus)
+    let idx = todoItems.findIndex(function (value) { return value.id == id })
 
     if (idx == -1) { throw new Error("no such element") }
     if (strict && !(Number(newStatus) ^ Number())) { throw new Error("element is already in desired state") }
