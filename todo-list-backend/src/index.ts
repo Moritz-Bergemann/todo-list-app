@@ -1,32 +1,61 @@
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, './.env')});
 import express, { type Request, type Response } from "express";
-import type { TodoItem, CreateTodoItemRequest } from "./types";
+import type { TodoItem, CreateTodoItemRequest, DeleteTodoItemRequest, UpdateTodoItemRequest } from "./types";
 // import cors from "cors";
 import cors from "cors";
 
 const app = express();
 const port = 3000;
+const mongoose = require('mongoose');
 app.use(express.json());
-app.use(cors());
+app.use(cors(
+	{ 
+		"methods": "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS", 
+	}));
 
-// State (count the number of requests)
+//Getting MONGODB_URI from .env using dotenv package :)
+mongoose.connect(process.env.MONGODB_URI)
+	.then(() => console.log('Connected to MongoDB'));
+	
+// State (count the number of requests) - I'll probably replace this with something that will count my MongoDB entries instead
 let idCounter = 0;
 
-const todos: TodoItem[] = [];
+// This is a schema that will map to a MongoDB collection and defines the shape of the documents within that collection.
+const todoSchema = new mongoose.Schema({
+	id: Number,
+	description: String,
+	isDone: Boolean
+});
+
+// This converts the schema into a Model.
+const Todo = mongoose.model('Todo', todoSchema);
+
+async function createTodo(description:String) {
+	// Creating an instance of the Todo model - a Document
+	const newTodoItem = new Todo({
+		id: idCounter,
+		description: description,
+		isDone: false
+	});
+
+	// This saves the new todo item into the database and stores the result in a constant.
+	return await newTodoItem.save();
+}
+
+// Returns all the todo items in the MongoDB database
+async function getTodos()
+{
+	return await Todo.find({});
+}
 
 // Add a todo item
 app.post("/todo-item", (req: Request, res: Response) => {
 	const todoRequest: CreateTodoItemRequest = req.body;
 
-	const newTodoItem: TodoItem = {
-		id: idCounter,
-		description: todoRequest.description,
-		isDone: false,
-	};
-
+	const newTodoItem = createTodo(todoRequest.description);
 	idCounter++;
-
-	todos.push(newTodoItem);
-
+	
 	res
 		.setHeader("Access-Control-Allow-Origin", "*")
 		.status(200)
@@ -34,8 +63,15 @@ app.post("/todo-item", (req: Request, res: Response) => {
 });
 
 // Get all the todos
-app.get("/todo-item", (req: Request, res: Response) => {
-	res.setHeader("Access-Control-Allow-Origin", "*").status(200).json(todos);
+app.get("/todo-item", async (req: Request, res: Response) => {
+	const todolist = await getTodos();
+	//counts the number of documents in the Todo collection
+	idCounter = await Todo.countDocuments({});
+
+	res
+		.setHeader("Access-Control-Allow-Origin", "*")
+		.status(200)
+		.send(todolist);
 });
 
 app.get("/", (req: Request, res: Response) => {
@@ -43,6 +79,28 @@ app.get("/", (req: Request, res: Response) => {
 		.setHeader("Access-Control-Allow-Origin", "*")
 		.status(200)
 		.send("This is the to-do list backend!");
+});
+
+// Updates an existing todo item in the database
+app.patch("/todo-item",async (req: Request, res: Response) => {
+	const todoRequest: UpdateTodoItemRequest = req.body;
+
+	const todo = await Todo.findOneAndUpdate({id:todoRequest.id}, {isDone: todoRequest.isDone});
+
+	res
+		.setHeader("Access-Control-Allow-Origin", "*")
+		.status(200)
+		.send(todo);
+});
+
+// Deletes by hashing the id in params into an ObjectId and then search in database for matching ObjectId to delete
+app.delete("/todo-item", async (req: Request, res: Response) => {
+	const todoRequest: DeleteTodoItemRequest = req.body;
+	await Todo.deleteOne({id:todoRequest.id});
+	res
+		.setHeader("Access-Control-Allow-Origin", "*")
+		.status(200)
+		.send("Delete done");
 });
 
 app.listen(port, () => {
