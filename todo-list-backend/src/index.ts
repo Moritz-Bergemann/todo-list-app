@@ -1,3 +1,5 @@
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, './.env')});
 import express, { type Request, type Response } from "express";
 import type { TodoItem, CreateTodoItemRequest, DeleteTodoItemRequest, UpdateTodoItemRequest } from "./types";
 // import cors from "cors";
@@ -12,8 +14,8 @@ app.use(cors(
 		"methods": "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS", 
 	}));
 
-// This has my password hardcoded, teehee!
-mongoose.connect('mongodb+srv://joleenchong:R4KNFakc3Sfy840X@cluster0.jq5llig.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
+//Getting MONGODB_URI from .env using dotenv package :)
+mongoose.connect(process.env.MONGODB_URI)
 	.then(() => console.log('Connected to MongoDB'));
 	
 // State (count the number of requests) - I'll probably replace this with something that will count my MongoDB entries instead
