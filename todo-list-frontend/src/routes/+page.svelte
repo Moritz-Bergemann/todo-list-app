@@ -1,4 +1,5 @@
 <script lang="ts">
+import TodoCell from "$lib/TodoCell.svelte";
 import { onMount } from "svelte";
 
 let pingResponseMessage: string;
@@ -48,15 +49,5 @@ onMount(() => {
 <button on:click={addTodoButtonclick}>Add new todo</button>
 
 {#each todos as todo}
-	<div class="todo-item">[{todo.isDone ? "X" : " "}] {todo.description}</div>
+	<TodoCell description={todo.description} done={todo.isDone}/>
 {/each}
-
-
-<style>
-	.todo-item {
-		background-color: cornflowerblue;
-		width: 200px;
-		margin: 5px;
-		padding: 10px;
-	}
-</style>
