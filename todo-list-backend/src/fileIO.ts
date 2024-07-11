@@ -1,5 +1,5 @@
 import type { TodoItem } from "./types"
-import { readFileSync, writeFileSync, mkdirSync } from 'fs'
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs'
 
 const TODOLISTPATH = __dirname + "/reasources/todolist"
 const REASOURCESPATH = __dirname + "/reasources"
@@ -11,7 +11,13 @@ export function saveTodoList(todoList: TodoItem[]){
 }
 
 export function readTodoList(){
-    let result =  JSON.parse(readFileSync(TODOLISTPATH,"utf-8"))
-    console.log('read todo list from:: '+TODOLISTPATH)
-    return result
+    let result
+    if (existsSync(TODOLISTPATH)) {
+        result =  JSON.parse(readFileSync(TODOLISTPATH,"utf-8"))
+        console.log('read todo list from:: '+TODOLISTPATH)
+        return result
+    }
+    console.log('no copy of todo list at:: '+TODOLISTPATH)
+    console.log('creating new todo list')
+    return []
 }

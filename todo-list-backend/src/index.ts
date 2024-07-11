@@ -1,9 +1,7 @@
 import express, { type Request, type Response } from 'express';
-import { readFileSync, writeFileSync } from 'fs'
 import type { TodoItem } from "./types";
 import { saveTodoList, readTodoList } from './fileIO';
 import { error } from 'console';
-import { json } from 'stream/consumers';
 import cors from 'cors';
 
 const app = express();
@@ -37,15 +35,6 @@ app.get("/ping", (req: Request, res: Response) => {
     res
         .status(200)
         .json(responseContent);
-});
-
-app.get("/refresh-todos", (req: Request, res: Response) => {
-    console.log("refreshing todo list")
-    todoItems = readTodoList()
-    res
-        .status(200)
-        .send(JSON.stringify(todoItems))
-        ;
 });
 
 app.get("/get-todos", (req: Request, res: Response) => {
@@ -129,6 +118,8 @@ app.post("/remove-todo", express.json(), (req: Request, res: Response) => {
 
     let removedElement = todoItems.splice(idx, 1)[0]
 
+    saveTodoList(todoItems)
+
     res
         .status(200)
         .send(JSON.stringify(removedElement))
@@ -138,20 +129,15 @@ app.post("/tag-task-as-complete", express.json(), (req: Request, res: Response) 
     console.log("tagging task as complete")
     const request = req.body;
     const id = request.id
-    const strict = request.strict;
     let result
     try {
-        result = changeCompletionStatusHandler(id, strict, true)
+        result = changeCompletionStatusHandler(id, true)
     } catch (e) {
         if (e instanceof Error) {
             res
                 .status(400)
                 .send(e.message)
                 ;
-        } else {
-            res
-                .status(500)
-                .send("unknown backend error")
         }
         return
     }
@@ -166,10 +152,9 @@ app.post("/tag-task-as-incomplete", express.json(), (req: Request, res: Response
     console.log("tagging task as incomplete")
     const request = req.body;
     const id = request.id
-    const strict = request.strict;
     let result
     try {
-        result = changeCompletionStatusHandler(id, strict, false)
+        result = changeCompletionStatusHandler(id, false)
     } catch (e) {
         if (e instanceof Error) {
             res
@@ -189,12 +174,11 @@ app.post("/tag-task-as-incomplete", express.json(), (req: Request, res: Response
         .send(JSON.stringify(result))
 });
 
-function changeCompletionStatusHandler(id: number, strict: boolean, newStatus: boolean) {
+function changeCompletionStatusHandler(id: number, newStatus: boolean) {
     console.log('changeing status of:: '+id+" ::to:: "+newStatus)
     let idx = todoItems.findIndex(function (value) { return value.id == id })
 
     if (idx == -1) { throw new Error("no such element") }
-    if (strict && !(Number(newStatus) ^ Number())) { throw new Error("element is already in desired state") }
 
     todoItems[idx].isDone = newStatus
 
@@ -204,5 +188,6 @@ function changeCompletionStatusHandler(id: number, strict: boolean, newStatus: b
 }
 
 app.listen(port, () => {
+    todoItems = readTodoList()
     console.log(`Server running at http://localhost:${port}`);
 });

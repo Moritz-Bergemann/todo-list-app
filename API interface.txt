@@ -18,19 +18,11 @@ remove task:
     post request to "/remove-todo"
     request body must contain a number(int) called id, containing the id of the task
     returns the deleted task if sucsessful
-    response code 422 if task could not be found with message "no task of provided id"
 
 set isDone to true for a task:
     post request to "/tag-task-as-complete"
     request body must contain a number(int) called id, containing the id of the task
-    and a boolean called strict which, if true, will cause the request to fail if the
-    task is already complete
     returns the task if sucsessful
-    response code 422 if task could not be found with message "no task of provided id"
-    response code 422 if task was already complete and strict was true with message
-    "task already complete"
 
 set isDone to false for a task:
     same as above, but post to "/tag-task-as-incomplete"
-    returns 422 with message "task not yet complete" if... the task is not yet
-    complete
