@@ -121,7 +121,7 @@
 	}
 
 	.todo-item {
-		background-color: cornflowerblue;
+		font-family:'Balsamiq Sans', sans-serif;
 		width: 200px;
 		margin: 5px;
 		padding: 10px;
@@ -129,7 +129,7 @@
 
 	.done {
 		opacity: 0.4;
-		background-color: cornflowerblue;
+		font-family:'Balsamiq Sans', sans-serif;
 		width: 200px;
 		margin: 5px;
 		padding: 10px;

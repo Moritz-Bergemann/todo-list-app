@@ -25,6 +25,7 @@
         margin-top: 1vh;
         margin-bottom: 1vh;
         font-size: medium;
+        font-family: 'Leckerli One', cursive;
         white-space: nowrap;
     }
     
