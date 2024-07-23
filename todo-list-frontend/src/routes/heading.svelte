@@ -18,6 +18,7 @@
         align-items: center;
         background-color: #e0d1ff;
         max-height: fit-content;
+        padding: 0.3rem;
     }
     
     header h1 {

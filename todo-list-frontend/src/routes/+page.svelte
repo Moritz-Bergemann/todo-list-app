@@ -105,6 +105,10 @@
 <style>
 	/* Lost values */
 	.body {
+		top:0px;
+		left:0px;
+		position: fixed;
+		width: 100%;
 		display: flex;
 		justify-content: center;
 		flex-flow: column;
@@ -113,11 +117,13 @@
 	}
 
 	.wrapper {
+		font-family:'Balsamiq Sans', sans-serif;
 		max-width: fit-content;
 		align-self: center;
 		background-color: #FFEEFF;
 		display: flex;
 		flex-flow: column;
+		height: 100vh;
 	}
 
 	.todo-item {
