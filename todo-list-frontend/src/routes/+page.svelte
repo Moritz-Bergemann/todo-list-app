@@ -96,7 +96,7 @@
 					on:click={() => onCheckboxClick(todo.isDone, todo.id)}
 				/>
 				{todo.description}
-				<button on:click={() => delTodoButtonClick(todo.id)}>X</button>
+				<button class="deleteButton" on:click={() => delTodoButtonClick(todo.id)}></button>
 			</div>
 		{/each}
 	</div>
@@ -128,7 +128,7 @@
 
 	.todo-item {
 		font-family:'Balsamiq Sans', sans-serif;
-		width: 200px;
+		width: auto;
 		margin: 5px;
 		padding: 10px;
 	}
@@ -136,9 +136,27 @@
 	.done {
 		opacity: 0.4;
 		font-family:'Balsamiq Sans', sans-serif;
-		width: 200px;
+		width: auto;
 		margin: 5px;
 		padding: 10px;
 		text-decoration: line-through;
+	}
+
+	.deleteButton {
+		border: none;
+		background-image: url("DeleteButton.png");
+		background-repeat: no-repeat;
+		background-color: transparent;
+		vertical-align: middle;
+		height: 24px;
+		width: 24px;
+	}
+
+	.deleteButton:hover {
+		opacity: 0.5;
+	}
+
+	input[type="checkbox"] {
+		accent-color: #2fc8b4;
 	}
 </style>

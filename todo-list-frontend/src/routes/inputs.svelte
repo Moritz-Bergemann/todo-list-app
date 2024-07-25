@@ -21,9 +21,20 @@
 
     input {
         font-family:'Balsamiq Sans', sans-serif;
+        width: 100%;
+    }
+
+    .new-todo-button {
+        border: none;
+        background-color: transparent;
     }
 
     .new-todo-button img {
         object-fit: cover;
+        vertical-align: middle;
+    }
+
+    .new-todo-button img:hover{
+        opacity: 0.5;
     }
 </style>
