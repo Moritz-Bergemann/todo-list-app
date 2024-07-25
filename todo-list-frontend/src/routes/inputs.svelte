@@ -22,7 +22,7 @@
 
     input {
         font-family:'Balsamiq Sans', sans-serif;
-        width: 100%;
+        width: 50%;
     }
 
     .new-todo-button {
