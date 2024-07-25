@@ -15,8 +15,9 @@
         display: flex;
         flex-flow: row;
         padding: 1rem;
-        justify-content: space-between;
+        justify-content: center;
         gap: 0.3rem;
+        position: sticky;
     }
 
     input {

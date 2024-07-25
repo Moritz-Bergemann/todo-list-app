@@ -34,7 +34,6 @@
 		getTodos();
 	}
 
-
 	async function delTodoButtonClick(todoID: number) {
 		const deleteTodoItemRequest: DeleteTodoItemRequest = {
 			id: todoID
@@ -83,32 +82,71 @@
 	import Inputs_Component from './inputs.svelte';
 </script>
 
-<div class="body">
+<div class="page">
 	<Heading></Heading>
-
-	<div class="wrapper">
-		<Inputs_Component description={newTodoDescription} button={addTodoButtonclick}></Inputs_Component>
-		{#each todos as todo}
-			<div class={todo.isDone ? 'done' : 'todo-item'}>
-				<input
+	
+	<div class="body">
+		<div class="wrapper">
+			<Inputs_Component description={newTodoDescription} button={addTodoButtonclick}></Inputs_Component>
+			<div class="todos-list">
+				{#each todos as todo}
+				<div class={todo.isDone ? 'done' : 'todo-item'}>
+					<input
 					type="checkbox"
 					bind:checked={todo.isDone}
 					on:click={() => onCheckboxClick(todo.isDone, todo.id)}
-				/>
-				{todo.description}
-				<button class="deleteButton" on:click={() => delTodoButtonClick(todo.id)}></button>
+					/>
+					{todo.description}
+					<button class="deleteButton" on:click={() => delTodoButtonClick(todo.id)}></button>
+				</div>
+				{/each}
+				<p>content</p>
+				<p>content</p>
+				<p>content</p>
+				<p>content</p>
+				<p>content</p>
+				<p>content</p>
+				<p>content</p>
+				<p>content</p>
+				<p>content</p>
+				<p>content</p>
+				<p>content</p>
+				<p>content</p>
+				<p>content</p>
+				<p>content</p>
+				<p>content</p>
+				<p>content</p>
+				<p>content</p>
+				<p>content</p>
+				<p>content</p>
+				<p>content</p>
+				<p>content</p>
+				<p>content</p>
+				<p>content</p>
+				<p>content</p>
+				<p>content</p>
+				<p>content</p>
+				<p>content</p>
+				<p>content</p>
+				<p>content</p>
+				<p>content</p>
+				<p>content</p>
+				<p>content</p>
+				<p>content</p>
+				<p>content</p>
+				<p>content</p>
 			</div>
-		{/each}
+		</div>
 	</div>
 </div>
-
-<style>
-	/* Lost values */
-	.body {
+	
+	<style>
+		/* Lost values */
+	.page {
 		top:0px;
 		left:0px;
 		position: fixed;
-		width: 100%;
+		width: 100vw;
 		display: flex;
 		justify-content: center;
 		flex-flow: column;
@@ -116,16 +154,34 @@
 		background-color: #FFEEFF;
 	}
 
+	.body {
+		display: flex;
+		flex-flow: row;
+		justify-self: center;
+		justify-items: center;
+		justify-content: center;
+		align-items: center;
+	}
+
 	.wrapper {
+		align-self: center;
 		font-family:'Balsamiq Sans', sans-serif;
 		max-width: fit-content;
 		align-self: center;
 		background-color: #FFEEFF;
+		flex: 1;
 		display: flex;
-		flex-flow: column;
 		height: 100vh;
+		flex-flow: column;
+		overflow: scroll;
 	}
 
+	.todos-list {
+		overflow: scroll;
+		align-self: center;
+		width: 100vw;
+	}
+	
 	.todo-item {
 		font-family:'Balsamiq Sans', sans-serif;
 		width: auto;
@@ -140,6 +196,38 @@
 		margin: 5px;
 		padding: 10px;
 		text-decoration: line-through;
+	}
+
+	.wrapper {
+	scrollbar-width: thin;
+	scrollbar-color: transparent;
+	}
+	.wrapper:-webkit-scrollbar {
+	width: 32px;
+	}
+	.wrapper:-webkit-scrollbar-track {
+	background: transparent;
+	}
+	.wrapper:-webkit-scrollbar-thumb {
+	border-radius: 12.74px;
+	border: 3px solid transparent;
+	}
+
+
+	::-webkit-scrollbar {
+    width: 10px;
+	}
+ 
+	::-webkit-scrollbar-track {
+		background-color: #ebebeb;
+		-webkit-border-radius: 10px;
+		border-radius: 10px;
+	}
+
+	::-webkit-scrollbar-thumb {
+		-webkit-border-radius: 10px;
+		border-radius: 10px;
+		background: #6d6d6d; 
 	}
 
 	.deleteButton {
