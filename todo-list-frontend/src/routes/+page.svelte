@@ -17,7 +17,6 @@
 		const createTodoItemRequest: CreateTodoItemRequest = {
 			description: newTodoDescription
 		};
-		const createTodoItemRequestJson = JSON.stringify(createTodoItemRequest);
 
 		const response = await fetch('http://localhost:3000/todo-item', {
 			method: 'POST', // This is a POST request, not the default GET
@@ -25,7 +24,7 @@
 				'Content-Type': 'application/json', // We are sending JSON
 				mode: 'no-cors' // no-cors, *cors, same-origin
 			},
-			body: createTodoItemRequestJson // The JSON we are sending
+			body: JSON.stringify(createTodoItemRequest) // The JSON we are sending
 		});
 
 		console.log(response);
@@ -39,15 +38,13 @@
 			id: todoID
 		};
 
-		const deleteTodoItemRequestJson = JSON.stringify(deleteTodoItemRequest);
-
 		const response = await fetch('http://localhost:3000/todo-item', {
 			method: 'DELETE',
 			headers: {
 				'Content-Type': 'application/json',
 				mode: 'no-cors'
 			},
-			body: deleteTodoItemRequestJson
+			body: JSON.stringify(deleteTodoItemRequest)
 		});
 
 		console.log(response);
@@ -61,14 +58,13 @@
 			id: id,
 			isDone: !isDone
 		};
-		const updateTodoItemRequestJson = JSON.stringify(updateTodoItemRequest);
 		const response = await fetch('http://localhost:3000/todo-item', {
 			method: 'PATCH',
 			headers: {
 				'Content-Type': 'application/json',
 				mode: 'no-cors'
 			},
-			body: updateTodoItemRequestJson
+			body: JSON.stringify(updateTodoItemRequest)
 		});
 
 		console.log(response);
@@ -87,7 +83,7 @@
 	
 	<div class="body">
 		<div class="wrapper">
-			<Inputs_Component description={newTodoDescription} button={addTodoButtonclick}></Inputs_Component>
+			<Inputs_Component bind:description={newTodoDescription} button={addTodoButtonclick}></Inputs_Component>
 			<div class="todos-list">
 				{#each todos as todo}
 				<div class={todo.isDone ? 'done' : 'todo-item'}>
