@@ -63,6 +63,14 @@ app.post("/add-todo", express.json(), (req: Request, res: Response) => {
             ; console.log("task name undefined.  sending response code 400"); return
     }
 
+    if (todoItems.findIndex(function (item) { return item.name == req.body.name}) != -1){
+        // if a task of this name already exists in this list
+        res
+            .status(400)
+            .send('to do list already contains element of this name')
+            ; console.log('task already in list.  did not add element of name:: '+req.body.name); return
+    }
+
     let id
     if (todoItems.length == 0) {
         id = 0

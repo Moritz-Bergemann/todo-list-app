@@ -1,20 +1,6 @@
-<!-- 
-Things to add:
-
-1) Add feature
-2) Remove feature
-3) Edit feature
-4) Save tasks to JSON file
-5) Upload tasks to JSON file
-6) ID feature to remember user 
-
-Things to work on
-1) Search task array to delete stuff
--->
-
-
 <script lang="ts">
     import type { TodoItem } from "./types";
+    import TodoItemDisplay from "$lib/TodoItemDisplay.svelte";
 
     let pingResponseMessage: string;
     let pingResponseCount: number;
@@ -22,7 +8,7 @@ Things to work on
     let taskName: string;
     let taskArray: any[] = [];
     let taskJSON: TodoItem[] = [];
-    let numTasks = 0;
+    let wipth = 0
 
     async function addTask() {
 
@@ -49,6 +35,9 @@ Things to work on
 
             // Pushes string to an array
             taskArray.push(taskName)
+
+            wipth = calculateWipth(taskJSON)
+
             console.log('todo added of name:: '+taskName)
         }
     }
@@ -152,12 +141,8 @@ Things to work on
 <p>Current Tasks:</p>
 <p>
     {#each taskJSON as task, i}
-        {task.id}:: {task.name}
-        {#if task.isDone}
-            |/
-        {/if}
-        <br>
-    {/each} 
+        <TodoItemDisplay done={task.isDone} description={task.name} wipth={wipth}/>
+    {/each}
 </p>
 
 <input bind:value={tempName} placeholder="Enter Task"/>

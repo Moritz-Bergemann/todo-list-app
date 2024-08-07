@@ -8,6 +8,6 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "../todo-list-frontend/src/lib/displayUtilities.ts"],
   "exclude": ["node_modules"]
 }
