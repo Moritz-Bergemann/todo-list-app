@@ -4,6 +4,7 @@ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
 source ~/.bashrc
 nvm install --lts
 nvm use --lts
+npm i cors
 npm install express
 npm install -D typescript @types/express @types/node
 npm run build

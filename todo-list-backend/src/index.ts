@@ -11,9 +11,6 @@ app.use(cors({
   "methods": "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS"
 }));
 
-// Just putting these here for debugging purposes
-let count = 0;
-
 let todoItems: TodoItem[] = [];
 
 app.get("/", (req: Request, res: Response) => {
@@ -21,20 +18,6 @@ app.get("/", (req: Request, res: Response) => {
     res
         .status(200)
         .send("ping recieved");
-});
-
-// Just putting these here for debugging purposes
-app.get("/ping", (req: Request, res: Response) => {
-    count++;
-
-    let responseContent = {
-        message: "pong",
-        count: count,
-    };
-
-    res
-        .status(200)
-        .json(responseContent);
 });
 
 app.get("/get-todos", (req: Request, res: Response) => {
