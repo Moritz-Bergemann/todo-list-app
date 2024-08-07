@@ -1,194 +1,98 @@
-<!-- 
-Things to add:
 
-1) Add feature
-2) Remove feature
-3) Edit feature
-4) Save tasks to JSON file
-5) Upload tasks to JSON file
-6) ID feature to remember user 
-
-Things to work on
-1) Search task array to delete stuff
--->
-
-
-<script lang="ts">
+<script lang='ts'>
     import type { TodoItem } from "./types";
 
-    let pingResponseMessage: string;
-    let pingResponseCount: number;
-    let tempName = '';
-    let taskName: string;
-    let taskArray: any[] = [];
-    let taskJSON: TodoItem[] = [];
-    let numTasks = 0;
+	/** @type {import('./types.ts').TestToDoList} */
+	export let data;
+
+    let TodoList: TodoItem[] = data.list
+    let newTaskInputBoxContents: string = ""
 
     async function addTask() {
-
-        if(tempName != '') {
-            console.log('adding todo of name:: '+taskName)
-            taskName = tempName;
-            await fetch("http://localhost:3000/add-todo", {
-                method: 'POST',
-                body: JSON.stringify({name: taskName}),
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
-            
-            
-            // let response = await fetch("http://localhost:3000/add-todo", {taskName});
-            let response = await fetch("http://localhost:3000/get-todos");
-
-            // Get the JSON body from the request
-            let responseJson = await response.json();
-
-            // Set our pingResponse variable to change the UI
-            taskJSON = responseJson;
-
-            // Pushes string to an array
-            taskArray.push(taskName)
-            console.log('todo added of name:: '+taskName)
+        console.log('Adding new task of name:: '+newTaskInputBoxContents)
+        if(newTaskInputBoxContents == ""){
+            console.log('not adding, as name is blank')
+            return
         }
-    }
-
-    async function deleteTask() {
-        console.log('deleting task of with name:: '+tempName)
-        if(tempName != '') {
-            let task = taskJSON.find(function (value:TodoItem) {   return value.name == tempName  })
-            if (    task != undefined   )
-            {
-                console.log('task found with name::\n'+JSON.stringify(task))
-                await fetch("http://localhost:3000/remove-todo", {
-                    method: 'POST',
-                    body: JSON.stringify({"id": task.id}),
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
-                });
-            }else{
-                console.log('no task found of requested name')
+        let response = await fetch("http://localhost:3000/add-todo",{
+            method: 'POST',
+            body: JSON.stringify({
+                name: newTaskInputBoxContents
+            }),
+            headers: {
+                'Content-Type': 'application/json'
             }
+        })
+
+        if(!response.ok){
+            throw new Error('request failed.  status:: '+response.status)
+        }
+
+        let newEntry = await response.json()
+
+        TodoList.push(newEntry)
+
+        console.log('successfully added:: '+newTaskInputBoxContents)
+
+        console.log('::tasks on list::')
+        for (let ii = 0; ii < TodoList.length; ii++) {
+            console.log(JSON.stringify(TodoList[ii]));
             
-            let response = await fetch("http://localhost:3000/get-todos");
-
-            // Get the JSON body from the request
-            let responseJson = await response.json();
-
-            // Set our pingResponse variable to change the UI
-            taskJSON = responseJson.name;
         }
-        // Delete tasks to the Backend
-        console.log('deleted task with name:: '+tempName)
     }
-
-    async function markAsDone() {
-        console.log('marking as done task of name:: '+tempName)
-
-        if(tempName != ''){
-            let task = taskJSON.find(function (value:TodoItem) {   return value.name == tempName  })
-            if (    task != undefined   )
-            {
-                console.log('task found under name::\n'+JSON.stringify(task))
-                await fetch("http://localhost:3000/tag-task-as-complete", {
-                    method: "POST",
-                    body: JSON.stringify({"id": task.id, "strict": false}),
-                    headers: {"Content-Type": "application/json"}
-                })
-            }
-        }else{
-            console.log('could not find task of requested name')
-        }
-        displayTasks()
-
-        console.log('marked as done task of name:: '+tempName)
-    }
-
-    async function markAsNotDone() {
-        console.log('marking as not done task of name:: '+tempName)
-
-        if(tempName != ''){
-            let task = taskJSON.find(function (value:TodoItem) {   return value.name == tempName  })
-            if (    task != undefined   )
-            {
-                console.log('task found under name::\n'+JSON.stringify(task))
-                await fetch("http://localhost:3000/tag-task-as-incomplete", {
-                    method: "POST",
-                    body: JSON.stringify({"id": task.id, "strict": false}),
-                    headers: {"Content-Type": "application/json"}
-                })
-            }
-        }else{
-            console.log('could not find task of requested name')
-        }
-        displayTasks()
-
-        console.log('marked as not done task of name:: '+tempName)
-    }
-    
-    async function displayTasks() {
-        console.log('displaying list::\n'+JSON.stringify(taskJSON))
-        // Update tasks to the Backend
-        let response = await fetch("http://localhost:3000/get-todos");
-
-        // Get the JSON body from the request
-        let responseJson = await response.json();
-
-        // Set our pingResponse variable to change the UI
-        taskJSON = responseJson;
-        console.log('displayed list::\n'+JSON.stringify(taskJSON))
-    }
-    
 </script>
 
-<h1>POGGERS Todo List</h1>
+<head>
+    <style>
+        h1 {text-align: center}
+        h2 {text-align: center}
+    </style>
+</head>
 
-{#if pingResponseMessage != undefined}
-    <p>The ping response message was: {pingResponseMessage}</p>
-    <p>The ping response count was: {pingResponseCount}</p>
-{/if}
+<body>
+    <h1>
+        POGGERS To-do list
+    </h1>
+    <div style= 
+        "width: 525px; height: 600px;
+        border: 2px solid black; background-color: #79286C;
+        border-radius:10px"
+    >
 
-<p>Current Tasks:</p>
-<p>
-    {#each taskJSON as task, i}
-        {task.id}:: {task.name}
-        {#if task.isDone}
-            |/
-        {/if}
-        <br>
-    {/each} 
-</p>
+        <div style=
+            "width: 250px; height: 580px;
+            position: relative; left: 270px; top:10px;
+            border: 2px solid black; background-color: #00FF1C;
+            border-radius:10px"
+        >
+            <h2>
+                Tasks
+            </h2>
+            {#each TodoList as task}
+                <div style=
+                    "width= 200px; height: 115px;
+                    position: relitive; left: 5px; top: 5px;
+                    border: 2px solid black; background-color: #995da2;
+                    border-radius:10px"
+                >
+                    <p>{task.name}</p>
+                    <p>{task.isDone}</p>
+                </div>
+            {/each}
+        </div>
 
-<input bind:value={tempName} placeholder="Enter Task"/>
 
-<div>
-    <button on:click={addTask}>
-        Add Task
-    </button>
-</div>
-
-<div>
-    <button on:click={deleteTask}>
-        Delete Task
-    </button>
-</div>
-
-<div>
-    <button on:click={markAsDone}>
-        Mark task as complete
-    </button>
-</div>
-
-<div>
-    <button on:click={markAsNotDone}>
-        Mark task is incomplete
-    </button>
-</div>
-
-<div>
-    <button on:click={displayTasks}>
-        Display Task
-    </button>
-</div>
-
+        <div style="
+        width: 250px; height: 150px;
+        position: relative; left: 10px; top: -574px;
+        border: 2px solid black; background-color: #808080;
+        border-radius:10px
+        ">
+            <h2>Add new task</h2>
+            <input style= "position: relative; left: 40px" bind:value={newTaskInputBoxContents}>
+            <div style="position: relative; left: 87px; top: 10px">
+                <button on:click={addTask}> Add Task </button>
+            </div>
+        </div>
+    </div>
+</body>

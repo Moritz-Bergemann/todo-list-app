@@ -3,3 +3,7 @@ export type TodoItem = {
     name: string;
     isDone: boolean;
 }
+
+export type TestToDoList = {
+    list: TodoItem[]
+}
