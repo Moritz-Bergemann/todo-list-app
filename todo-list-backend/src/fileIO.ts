@@ -1,8 +1,8 @@
 import type { TodoItem } from "./types"
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs'
 
-const TODOLISTPATH = __dirname + "/reasources/todolist"
 const REASOURCESPATH = __dirname + "/reasources"
+const TODOLISTPATH = REASOURCESPATH + "/todoList"
 
 export function saveTodoList(todoList: TodoItem[]){
     mkdirSync(REASOURCESPATH, { recursive: true })

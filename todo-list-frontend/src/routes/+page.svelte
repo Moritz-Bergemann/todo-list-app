@@ -1,110 +1,118 @@
 
 <script lang='ts'>
+	import { onMount } from "svelte";
     import type { TodoItem } from "./types";
-    import TodoItemDisplay from "$lib/TodoItemDisplay.svelte";
 
-	/** @type {import('./types.ts').TestToDoList} */
-	export let data;
+    let TodoList: TodoItem[] = []
+    let newTaskName: string = ""
 
-    let TodoList: TodoItem[] = data.list
-    let newTaskInputBoxContents: string = ""
-    let pingResponseMessage: string;
-    let pingResponseCount: number;
-    let tempName = '';
-    let taskName: string;
-    let taskArray: any[] = [];
-    let taskJSON: TodoItem[] = [];
-    let wipth = 0
+    async function getTodos() {
+        const response = await fetch("http://localhost:3000/get-todos")
+        if(!response.ok){
+            console.log('failed to get todo list with response:: '+response.status)
+            throw new Error('get todos failed')
+        }
 
-    async function addTask() {
+        TodoList = await response.json()
 
-        if(tempName != '') {
+        console.log('::to do list updated::\n' + JSON.stringify(TodoList))
+        
+    }
+
+    async function addTask(taskName: string) {
+
+        if(taskName != '') {
             console.log('adding todo of name:: '+taskName)
-            taskName = tempName;
-            await fetch("http://localhost:3000/add-todo", {
+            const response = await fetch("http://localhost:3000/add-todo", {
                 method: 'POST',
                 body: JSON.stringify({name: taskName}),
                 headers: {
                     "Content-Type": "application/json",
                 },
             });
-            
-            
-            // let response = await fetch("http://localhost:3000/add-todo", {taskName});
-            let response = await fetch("http://localhost:3000/get-todos");
 
-            // Get the JSON body from the request
-            let responseJson = await response.json();
+            if(!response.ok){
+                console.log("add task failed:: "+response.status)
+                throw new Error("add task failed");
+            }
 
-            // Set our pingResponse variable to change the UI
-            taskJSON = responseJson;
+            //  get the list to still update, without needing to replace the list
 
-            // Pushes string to an array
-            taskArray.push(taskName)
-
-            wipth = calculateWipth(taskJSON)
+            getTodos()
 
             console.log('todo added of name:: '+taskName)
-        }
-    }
-
-    async function deleteTask() {
-        console.log('deleting task of with name:: '+tempName)
-        if(tempName != '') {
-            let task = taskJSON.find(function (value:TodoItem) {   return value.name == tempName  })
-            if (    task != undefined   )
-            {
-                console.log('task found with name::\n'+JSON.stringify(task))
-                await fetch("http://localhost:3000/remove-todo", {
-                    method: 'POST',
-                    body: JSON.stringify({"id": task.id}),
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
-                });
-            }else{
-                console.log('no task found of requested name')
-            }
-            
-            let response = await fetch("http://localhost:3000/get-todos");
-
-            // Get the JSON body from the request
-            let responseJson = await response.json();
-
-            // Set our pingResponse variable to change the UI
-            taskJSON = responseJson.name;
-        }
-        // Delete tasks to the Backend
-        console.log('deleted task with name:: '+tempName)
-    }
-
-    async function markAsDone() {
-        console.log('marking as done task of name:: '+tempName)
-
-        if(tempName != ''){
-            let task = taskJSON.find(function (value:TodoItem) {   return value.name == tempName  })
-            if (    task != undefined   )
-            {
-                console.log('task found under name::\n'+JSON.stringify(task))
-                await fetch("http://localhost:3000/tag-task-as-complete", {
-                    method: "POST",
-                    body: JSON.stringify({"id": task.id, "strict": false}),
-                    headers: {"Content-Type": "application/json"}
-                })
-            }
         }else{
-            console.log('could not find task of requested name')
+            console.log('task name is blank.  adding nothing')
         }
-        displayTasks()
-
-        console.log('successfully added:: '+newTaskInputBoxContents)
-
-        console.log('::tasks on list::')
-        for (let ii = 0; ii < TodoList.length; ii++) {
-            console.log(JSON.stringify(TodoList[ii]));
-            
-        }
+        console.log('::todoList::')
+        console.log(JSON.stringify(TodoList))
     }
+
+    async function deleteTask(taskid: number) {
+        console.log('deleting task id:: '+taskid)
+    
+        const response = await fetch("http://localhost:3000/remove-todo", {
+            method: "POST",
+            body: JSON.stringify({id: taskid}),
+            headers: {
+                "Content-Type":"application/json"
+            }
+        })
+
+        if(!response.ok) {
+            console.log('remove task failed:: '+response.status)
+            throw new Error('remove task failed')
+        }
+
+        getTodos()
+
+        console.log('removed todo of id:: '+taskid)
+    }
+
+    async function markAsDone(taskid: number) {
+        console.log('marking as done task of id:: '+taskid)
+
+        const response = await fetch("http://localhost:3000/tag-task-as-complete", {
+            method: 'POST',
+            body: JSON.stringify({id: taskid}),
+            headers: {
+                'Content-Type':'application/json'
+            }
+        })
+
+        if(!response.ok){
+            console.log('failed to mark as complete task of id:: '+taskid+'\nfailed with response code:: '+response.status)
+            throw new Error('failed to tag as complete')
+        }
+
+        getTodos()
+
+        console.log('sucsessfully marked as done task of id:: '+taskid)
+    }
+    async function markAsIncomplete(taskid: number) {
+        console.log('marking as done task of id:: '+taskid)
+
+        const response = await fetch("http://localhost:3000/tag-task-as-incomplete", {
+            method: 'POST',
+            body: JSON.stringify({id: taskid}),
+            headers: {
+                'Content-Type':'application/json'
+            }
+        })
+
+        if(!response.ok){
+            console.log('failed to mark as incomplete task of id:: '+taskid+'\nfailed with response code:: '+response.status)
+            throw new Error('failed to tag as incomplete')
+        }
+
+        getTodos()
+
+        console.log('sucsessfully marked as incomplete task of id:: '+taskid)
+    }
+
+    onMount(() => {
+        getTodos()
+    })
 </script>
 
 <head>
@@ -125,23 +133,39 @@
     >
 
         <div style=
-            "width: 250px; height: 580px;
-            position: relative; left: 270px; top:10px;
+            "
+            width: 250px; height: 580px;
+            position: relative; left: 270px; top: 10px;
             border: 2px solid black; background-color: #00FF1C;
-            border-radius:10px"
+            border-radius:10px
+            "
         >
             <h2>
                 Tasks
             </h2>
             {#each TodoList as task}
                 <div style=
-                    "width= 200px; height: 115px;
-                    position: relitive; left: 5px; top: 5px;
-                    border: 2px solid black; background-color: #995da2;
-                    border-radius:10px"
+                    "
+                    width: 230px; height 100px;
+                    position: relative; left: 5px; top: 5px;
+                    border: 2px solid black; background-color: #FFB000;
+                    border-radius: 50px
+                    "
                 >
-                    <p>{task.name}</p>
-                    <p>{task.isDone}</p>
+                    <p style= "position:relative; right: -10px">
+                        {task.name}
+                    </p>
+                    <!--    get this to align to the right of parragraph    -->
+                    <p>
+                        {task.isDone ? "x" : " "}
+                    </p>
+                    <!--    get this button to align to the right of the parragraph    -->
+                    <button on:click={() => deleteTask(task.id)}>delete task</button>
+                    {#if task.isDone}
+                        <button on:click={() => markAsIncomplete(task.id)}> mark as not done </button>
+                    {:else}
+                        <button on:click={() => markAsDone(task.id)}> mark as done </button>
+                    {/if}
                 </div>
             {/each}
         </div>
@@ -154,9 +178,9 @@
         border-radius:10px
         ">
             <h2>Add new task</h2>
-            <input style= "position: relative; left: 40px" bind:value={newTaskInputBoxContents}>
+            <input style= "position: relative; left: 40px" bind:value={newTaskName}>
             <div style="position: relative; left: 87px; top: 10px">
-                <button on:click={addTask}> Add Task </button>
+                <button on:click={() => addTask(newTaskName)}> Add Task </button>
             </div>
         </div>
     </div>

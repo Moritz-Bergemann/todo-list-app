@@ -1,7 +1,6 @@
 import express, { type Request, type Response } from 'express';
 import type { TodoItem } from "./types";
 import { saveTodoList, readTodoList } from './fileIO';
-import { error } from 'console';
 import cors from 'cors';
 
 const app = express();
@@ -12,13 +11,6 @@ app.use(cors({
 }));
 
 let todoItems: TodoItem[] = [];
-
-app.get("/", (req: Request, res: Response) => {
-    console.log("pinging")
-    res
-        .status(200)
-        .send("ping recieved");
-});
 
 app.get("/get-todos", (req: Request, res: Response) => {
     console.log("sending todo list")
